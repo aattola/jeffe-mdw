@@ -4,6 +4,7 @@ import './index.css';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { HashRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import App from './App';
 
 const queryClient = new QueryClient({
@@ -27,6 +28,7 @@ ReactDOM.render(
       <HashRouter>
         <App />
       </HashRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </ThemeProvider>,
   document.getElementById('root'),

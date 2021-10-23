@@ -1,8 +1,11 @@
+/* eslint-disable import/no-duplicates */
 import React from 'react';
 import styled from '@emotion/styled';
 import { InputAdornment, TextField } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Search from '@mui/icons-material/Search';
+import fi from 'date-fns/locale/fi';
+import { formatDistance } from 'date-fns';
 
 const Container = styled.div`
   background: #2a3c52;
@@ -107,7 +110,15 @@ const SearchList = ({ name, items }: SearchListProps) => {
                 {' '}
                 {item.id}
               </span>
-              <span style={{ marginLeft: 'auto' }}>{item.timestamp}</span>
+              <span style={{ marginLeft: 'auto' }}>
+                {formatDistance(
+                  new Date(),
+                  new Date(item.timestamp),
+                  { locale: fi },
+                )}
+                {' '}
+                sitten
+              </span>
             </ItemGrid>
           </GridItem>
         ))}

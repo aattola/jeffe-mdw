@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
+import { CircularProgress } from '@mui/material';
 import SearchList from '../components/SearchList';
 import Case from '../components/Case';
 import Rikollinen from '../components/Rikollinen';
 import { fetchNui } from '../../utils/fetchNui';
+import ErrorBoundary from '../../ErrorBoundary';
 
 const Grid = styled.div`
   display: grid;
@@ -17,6 +19,10 @@ const Grid = styled.div`
 
 async function fetchTapahtumat() {
   return fetchNui('tapahtumat');
+}
+
+async function getTapahtumat(data: {id: string}) {
+  return fetchNui('tapahtumat', data);
 }
 
 export interface ICase {
@@ -31,26 +37,42 @@ export interface ICase {
 const Tapahtumat = () => {
   const { data, isSuccess, isError } = useQuery('tapahtumat', fetchTapahtumat);
   const { id } = useParams<{id?: string}>();
+  const {
+    mutate, isSuccess: success, data: tapahtuma, isLoading,
+  } = useMutation(['tapahtuma', id], getTapahtumat);
 
-  const activeCase = data?.res?.data.filter((a: ICase) => a.id == Number(id))[0];
+  useEffect(() => {
+    if (id) {
+      mutate({ id });
+    }
+  }, [id]);
 
   return (
-    <div>
+    <ErrorBoundary>
       <Grid>
         {isSuccess && (
-          <SearchList name="Tapahtumat" items={data.res.data} />
+          <>
+            <SearchList name="Tapahtumat" items={data.res.data} />
+            {isLoading && <CircularProgress />}
+            {id && success && (
+              <>
+                {tapahtuma.res.data[0] ? (
+                  <>
+                    <Case name={data.res.data.name} caseData={tapahtuma.res.data[0]} id={id} />
+                    <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
+                  </>
+                ) : (
+                  <h1>Huijaatko koska tuommoisella id:llä ei löydy mitään???</h1>
+                )}
+              </>
+            )}
+          </>
         )}
         {isError && (
           <h1>virhe</h1>
         )}
-        {id && (
-          <>
-            <Case name={data.res.data.name} caseData={activeCase} id={id} />
-            <Rikollinen caseData={activeCase} id={id} />
-          </>
-        )}
       </Grid>
-    </div>
+    </ErrorBoundary>
   );
 };
 

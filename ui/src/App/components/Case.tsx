@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Chip, InputAdornment, TextField } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Add from '@mui/icons-material/Add';
 import Create from '@mui/icons-material/Create';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
-import Search from '@mui/icons-material/Search';
+import Save from '@mui/icons-material/Save';
+import { useMutation, useQueryClient } from 'react-query';
 import { ICase } from '../pages/tapahtumat';
+import { fetchNui } from '../../utils/fetchNui';
+import TagDialog from './TagDialog';
 
 const Container = styled.div`
   display: flex;
@@ -57,15 +60,68 @@ type CaseProps = {
   caseData: ICase
 }
 
-const Case = ({ name, id, caseData }: CaseProps) => {
+async function mutateTapahtuma(data: ICase) {
+  return fetchNui('tallennaTapahtuma', data);
+}
+
+async function mutateNew() {
+  return fetchNui('uusiTapahtuma');
+}
+
+async function deleteCase(id: number) {
+  return fetchNui('poistaTapahtuma', { id });
+}
+
+const Case = ({ id, caseData }: CaseProps) => {
   const history = useHistory();
+  const queryClient = useQueryClient();
+  const { mutateAsync, isLoading } = useMutation(['case', caseData.id], mutateTapahtuma);
+  const { mutateAsync: newAsync, isLoading: loading } = useMutation(['newCase', Date.now()], mutateNew);
+  const { mutateAsync: deleteAsync } = useMutation(['deleteCase', Date.now()], deleteCase);
+  const { tags, police } = JSON.parse(caseData.data);
+  const [name, setName] = useState(caseData.name);
+  const [desc, setDesc] = useState(caseData.description);
+  const [open, setOpen] = useState(false);
+  const [tagit, setTags] = useState(tags ?? []);
+
+  async function handleDeleteTapahtuma() {
+    await deleteAsync(caseData.id);
+    await queryClient.invalidateQueries('tapahtumat');
+    history.push('/tapahtumat');
+  }
+
+  async function handleCreateNew() {
+    await newAsync();
+    await queryClient.invalidateQueries('tapahtumat');
+  }
+
+  async function handleSave() {
+    const saveData = {
+      ...caseData,
+      name,
+      description: desc,
+      data: JSON.stringify({ tags: tagit }),
+    };
+
+    await mutateAsync(saveData);
+    await queryClient.invalidateQueries('tapahtumat');
+  }
 
   function handleDelete(e: any) {
+    const newTags = tagit.filter((tag: any) => {
+      if (tag.id !== e) {
+        return tag;
+      }
+      return null;
+    });
+    setTags(newTags);
+  }
+
+  function handlePoliceDelete(e: number) {
     console.log(e, 'delete eventti');
   }
 
-  const { tags } = JSON.parse(caseData.data);
-  console.log('tags', tags);
+  console.log('tags & police', tags, police, tagit);
   return (
     <Container>
       <TextContainer>
@@ -74,8 +130,9 @@ const Case = ({ name, id, caseData }: CaseProps) => {
           {caseData.id}
 
           <div style={{ marginLeft: 'auto' }}>
-            <DeleteOutline style={{ cursor: 'pointer' }} />
-            <Add style={{ cursor: 'pointer' }} />
+            <DeleteOutline onClick={handleDeleteTapahtuma} style={{ cursor: 'pointer' }} />
+            <Add onClick={handleCreateNew} style={{ cursor: 'pointer' }} />
+            <Save onClick={handleSave} style={{ cursor: 'pointer' }} />
           </div>
         </InfoBar>
         <InfoBar style={{ marginTop: 5 }}>
@@ -91,7 +148,8 @@ const Case = ({ name, id, caseData }: CaseProps) => {
             id="search"
             label="Nimi"
             variant="standard"
-            value={caseData.name}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </InfoBar>
         <Grid>
@@ -99,7 +157,8 @@ const Case = ({ name, id, caseData }: CaseProps) => {
           <TextField
             placeholder="Selityksiä"
             multiline
-            value={caseData.description}
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
             minRows={8}
           />
         </Grid>
@@ -112,8 +171,11 @@ const Case = ({ name, id, caseData }: CaseProps) => {
         </InfoBar>
         <Grid>
           <ChipGrid>
-            <Chip label="P. Tellervo" variant="outlined" onDelete={handleDelete} />
-            <Chip label="L. Aapinen" variant="outlined" onDelete={handleDelete} />
+            {police?.map((tag: {label: string, id: number}) => (
+              <Chip key={tag.id} label={tag.label} onDelete={() => handlePoliceDelete(tag.id)} />
+            ))}
+            {/* <Chip label="P. Tellervo" variant="outlined" onDelete={handleDelete} /> */}
+            {/* <Chip label="L. Aapinen" variant="outlined" onDelete={handleDelete} /> */}
           </ChipGrid>
         </Grid>
       </TextContainer>
@@ -121,12 +183,13 @@ const Case = ({ name, id, caseData }: CaseProps) => {
       <TextContainer>
         <InfoBar>
           <span>Tagit:</span>
-          <Add style={{ marginLeft: 'auto', cursor: 'pointer' }} />
+          <Add onClick={() => setOpen(true)} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
         </InfoBar>
         <Grid>
+          <TagDialog open={open} setOpen={setOpen} tagit={tagit} setTagit={setTags} />
           <ChipGrid>
-            {tags?.map((tag: {label: string, id: number}) => (
-              <Chip label={tag.label} onDelete={() => handleDelete(tag.id)} />
+            {tagit?.map((tag: {label: string, id: number}) => (
+              <Chip key={tag.id} label={tag.label} onDelete={() => handleDelete(tag.id)} />
             ))}
           </ChipGrid>
         </Grid>

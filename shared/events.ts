@@ -1,4 +1,4 @@
-function emitNetPromise(resource: string, data?: any, timeout = 2500) {
+function emitNetPromise(resource: string, data?: any, timeout = 3500) {
   const [res, event] = resource.split(':');
   const newEvent = `INTERNAL_SERVER_${event}`;
   const eventName = `${res}:${newEvent}`;

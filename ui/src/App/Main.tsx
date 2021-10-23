@@ -3,7 +3,9 @@ import {
   Box, Button, Divider, Grid, List, ListItem, ListItemIcon, ListItemText, Paper,
 } from '@mui/material';
 import styled from '@emotion/styled';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import {
+  Route, Switch, useHistory, useLocation,
+} from 'react-router-dom';
 import Etusivu from './pages/etusivu';
 import Tapahtumat from './pages/tapahtumat';
 
@@ -55,6 +57,7 @@ const pages = ['Etusivu', 'Tapahtumat', 'Profiilit', 'Raportit', 'Todisteet'];
 
 const Main = () => {
   const history = useHistory();
+  const location = useLocation<string>();
   const [page, setPage] = useState('Etusivu');
 
   function changePage(sivu: string) {
@@ -68,7 +71,7 @@ const Main = () => {
         <Sidebar>
           <SidebarGrid>
             {pages.map((sivu) => (
-              <SidebarItem active={page === sivu} key={sivu} onClick={() => changePage(sivu)}>{sivu}</SidebarItem>
+              <SidebarItem active={location.pathname.toLowerCase().includes(sivu.toLowerCase())} key={sivu} onClick={() => changePage(sivu)}>{sivu}</SidebarItem>
             ))}
           </SidebarGrid>
         </Sidebar>
