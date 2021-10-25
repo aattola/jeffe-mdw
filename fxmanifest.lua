@@ -14,6 +14,8 @@ files {
 ui_page 'ui/dist/index.html'
 
 client_script 'app/build/client/*.client.js'
-server_script 'app/build/server/*.server.js'
+server_scripts {
+    'app/build/server/*.server.js',
+}
 
 dependency 'mysql-async'

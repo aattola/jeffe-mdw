@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { Chip, InputAdornment, TextField } from '@mui/material';
+import {
+  Chip, Input, InputAdornment, LinearProgress, linearProgressClasses, TextField,
+} from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Add from '@mui/icons-material/Add';
 import Create from '@mui/icons-material/Create';
 import DeleteOutline from '@mui/icons-material/DeleteOutline';
 import Save from '@mui/icons-material/Save';
 import { useMutation, useQueryClient } from 'react-query';
-import { ICase } from '../pages/tapahtumat';
+import { Scrollbars } from 'react-custom-scrollbars-2';
+import { ICase } from '../pages/raportit';
 import { fetchNui } from '../../utils/fetchNui';
 import TagDialog from './TagDialog';
 
@@ -15,6 +18,7 @@ const Container = styled.div`
   display: flex;
   gap: 10px;
   flex-direction: column;
+  position: relative; 
   
   & > * {
     border-radius: 2px;
@@ -48,6 +52,18 @@ const TextContainer = styled.div`
   padding: 10px;
 `;
 
+const BorderLinearProgress = styled(LinearProgress)(({ theme }: any) => ({
+  height: 10,
+  borderRadius: 3,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#1a90ff' : '#308fe8',
+  },
+}));
+
 interface Items {
   name: string
   id: number
@@ -58,6 +74,7 @@ type CaseProps = {
   name: string
   id: string
   caseData: ICase
+  loading: boolean
 }
 
 async function mutateTapahtuma(data: ICase) {
@@ -72,7 +89,7 @@ async function deleteCase(id: number) {
   return fetchNui('poistaTapahtuma', { id });
 }
 
-const Case = ({ id, caseData }: CaseProps) => {
+const Case = ({ id, caseData, loading: lataa }: CaseProps) => {
   const history = useHistory();
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading } = useMutation(['case', caseData.id], mutateTapahtuma);
@@ -87,7 +104,7 @@ const Case = ({ id, caseData }: CaseProps) => {
   async function handleDeleteTapahtuma() {
     await deleteAsync(caseData.id);
     await queryClient.invalidateQueries('tapahtumat');
-    history.push('/tapahtumat');
+    history.push('/raportit');
   }
 
   async function handleCreateNew() {
@@ -121,13 +138,21 @@ const Case = ({ id, caseData }: CaseProps) => {
     console.log(e, 'delete eventti');
   }
 
-  console.log('tags & police', tags, police, tagit);
   return (
     <Container>
-      <TextContainer>
+      {lataa && (
+        <BorderLinearProgress style={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '8px',
+        }}
+        />
+      )}
+      <TextContainer style={{
+        flex: 1, display: 'grid', gridTemplateRows: 'auto auto 1fr', gridGap: 2,
+      }}
+      >
         <InfoBar>
-          Tapahtuma #
-          {caseData.id}
+          Raportti #
+          {lataa ? '' : caseData.id}
 
           <div style={{ marginLeft: 'auto' }}>
             <DeleteOutline onClick={handleDeleteTapahtuma} style={{ cursor: 'pointer' }} />
@@ -148,20 +173,34 @@ const Case = ({ id, caseData }: CaseProps) => {
             id="search"
             label="Nimi"
             variant="standard"
-            value={name}
+            value={(name ?? undefined)}
             onChange={(e) => setName(e.target.value)}
           />
         </InfoBar>
-        <Grid>
 
-          <TextField
+        <Scrollbars
+          autoHide
+          autoHideTimeout={1000}
+          autoHideDuration={200}
+          height="100%"
+        >
+          <Input
             placeholder="Selityksiä"
             multiline
-            value={desc}
+            value={(desc ?? undefined)}
+            minRows={25}
+            disableUnderline
             onChange={(e) => setDesc(e.target.value)}
-            minRows={8}
+            sx={{
+              backgroundColor: '#212e3e',
+              flex: 1,
+              width: '100%',
+              textarea: {
+                padding: '5px 10px',
+              },
+            }}
           />
-        </Grid>
+        </Scrollbars>
       </TextContainer>
 
       <TextContainer>

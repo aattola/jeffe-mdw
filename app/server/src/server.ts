@@ -2,6 +2,7 @@ import { onNetPromise } from '@app/shared/events';
 // @ts-ignore
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fetchAll, execute } from 'fivem-mysql-async-js';
+import './router';
 
 console.log('Hello from server');
 
@@ -13,7 +14,7 @@ onNetPromise('jeffe-patja:tapahtumat', async (data, cb, source) => {
 
     return cb({ ok: true, data: dbRes }, source);
   }
-  const dbRes = await fetchAll('SELECT * FROM patja_tapahtumat LIMIT 20');
+  const dbRes = await fetchAll('SELECT * FROM patja_tapahtumat ORDER BY id DESC LIMIT 20');
 
   return cb({ ok: true, data: dbRes }, source);
 });

@@ -6,6 +6,7 @@ import { HashRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import App from './App';
+import { fetchNui } from './utils/fetchNui';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +21,17 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
   },
+});
+
+fetchNui('ip').then((data) => {
+  console.log(data.ip, 'ip');
+  if (data.ip) {
+    // eslint-disable-next-line no-global-assign
+    (window as any).ip = data.ip;
+  } else {
+    // eslint-disable-next-line no-global-assign
+    (window as any).ip = 'localhost';
+  }
 });
 
 ReactDOM.render(

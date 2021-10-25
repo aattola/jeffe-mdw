@@ -70,9 +70,11 @@ interface Items {
 type SearchListProps = {
   name: string
   items: Items[]
+  // eslint-disable-next-line react/require-default-props
+  showTimestamp?: boolean
 }
 
-const SearchList = ({ name, items }: SearchListProps) => {
+const SearchList = ({ name, items, showTimestamp = true }: SearchListProps) => {
   const history = useHistory();
 
   return (
@@ -99,7 +101,7 @@ const SearchList = ({ name, items }: SearchListProps) => {
         {items.map((item) => (
           <GridItem
             onClick={() => {
-              history.push(`/tapahtumat/${item.id}`);
+              history.push(`/${name}/${item.id}`);
             }}
             key={item.id}
           >
@@ -110,15 +112,17 @@ const SearchList = ({ name, items }: SearchListProps) => {
                 {' '}
                 {item.id}
               </span>
-              <span style={{ marginLeft: 'auto' }}>
-                {formatDistance(
-                  new Date(),
-                  new Date(item.timestamp),
-                  { locale: fi },
-                )}
-                {' '}
-                sitten
-              </span>
+              {showTimestamp && (
+                <span style={{ marginLeft: 'auto' }}>
+                  {formatDistance(
+                    new Date(),
+                    new Date(item.timestamp),
+                    { locale: fi },
+                  )}
+                  {' '}
+                  sitten
+                </span>
+              )}
             </ItemGrid>
           </GridItem>
         ))}

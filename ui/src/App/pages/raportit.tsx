@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, LinearProgress, linearProgressClasses } from '@mui/material';
 import SearchList from '../components/SearchList';
 import Case from '../components/Case';
 import Rikollinen from '../components/Rikollinen';
@@ -18,7 +18,7 @@ const Grid = styled.div`
 `;
 
 async function fetchTapahtumat() {
-  return fetchNui('tapahtumat');
+  return fetchNui('tapahtumat', {}, true);
 }
 
 async function getTapahtumat(data: {id: string}) {
@@ -34,7 +34,7 @@ export interface ICase {
   data: any
 }
 
-const Tapahtumat = () => {
+const Raportit = () => {
   const { data, isSuccess, isError } = useQuery('tapahtumat', fetchTapahtumat);
   const { id } = useParams<{id?: string}>();
   const {
@@ -52,17 +52,35 @@ const Tapahtumat = () => {
       <Grid>
         {isSuccess && (
           <>
-            <SearchList name="Tapahtumat" items={data.res.data} />
-            {isLoading && <CircularProgress />}
-            {id && success && (
+            <SearchList name="Raportit" items={data.res.data} />
+            {id && (
               <>
-                {tapahtuma.res.data[0] ? (
+                {success ? (
                   <>
-                    <Case name={data.res.data.name} caseData={tapahtuma.res.data[0]} id={id} />
-                    <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
+                    {tapahtuma.res.data[0] ? (
+                      <>
+                        <Case loading={false} name={data.res.data.name} caseData={tapahtuma.res.data[0]} id={id} />
+                        <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
+                      </>
+                    ) : (
+                      <h1>Huijaatko koska tuommoisella id:llä ei löydy mitään???</h1>
+                    )}
                   </>
                 ) : (
-                  <h1>Huijaatko koska tuommoisella id:llä ei löydy mitään???</h1>
+                  <Case
+                    name=""
+                    loading
+                    caseData={{
+                      id: 1,
+                      name: 'Ladataan',
+                      description: '...',
+                      data: '{}',
+                      rikolliset: '{}',
+                      timestamp: (Date.now() as any),
+                    }}
+                    id={id}
+                  />
+
                 )}
               </>
             )}
@@ -76,4 +94,4 @@ const Tapahtumat = () => {
   );
 };
 
-export default Tapahtumat;
+export default Raportit;

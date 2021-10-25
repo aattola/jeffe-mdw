@@ -7,15 +7,24 @@ import {
   Route, Switch, useHistory, useLocation,
 } from 'react-router-dom';
 import Etusivu from './pages/etusivu';
-import Tapahtumat from './pages/tapahtumat';
+import Raportit from './pages/raportit';
+import Profiilit from './pages/profiilit';
 
-const Nappi = styled.button`
-  color: turquoise;
+const CustomContainer = styled.div`
+  height: 100vh;
 `;
 
 const CustomGrid = styled.div`
   display: grid;
+  grid-template-rows: 125px 1fr;
   grid-template-columns: 1fr 10fr;
+  height: 100%;
+`;
+
+const Header = styled.div`
+  grid-column: 1 / 3;
+  background: #2a3c52;
+  border-bottom: 2px solid #42a5f5;
 `;
 
 const Sidebar = styled.div`
@@ -51,9 +60,26 @@ const SidebarItem = styled.div<{active: boolean}>`
 
 const PageContents = styled.div`
   background: #3e495e;
+  display: flex;
 `;
 
-const pages = ['Etusivu', 'Tapahtumat', 'Profiilit', 'Raportit', 'Todisteet'];
+const pages = ['Etusivu', 'Raportit', 'Profiilit', 'Poliisit'];
+
+const tabs = [
+  {
+    route: '/raportit/3',
+    page: 'Raportit',
+    id: 1,
+  }, {
+    route: '/profiilit',
+    page: 'Profiilit',
+    id: 2,
+  }, {
+    route: '/profiilit/3',
+    page: 'Profiilit',
+    id: 3,
+  },
+];
 
 const Main = () => {
   const history = useHistory();
@@ -66,46 +92,54 @@ const Main = () => {
   }
 
   return (
-    <div>
-      <CustomGrid>
-        <Sidebar>
-          <SidebarGrid>
-            {pages.map((sivu) => (
-              <SidebarItem active={location.pathname.toLowerCase().includes(sivu.toLowerCase())} key={sivu} onClick={() => changePage(sivu)}>{sivu}</SidebarItem>
-            ))}
-          </SidebarGrid>
-        </Sidebar>
+    <CustomContainer>
+      <div style={{ padding: '40px', height: 'calc(100vh - 80px)' }}>
+        <CustomGrid>
+          <Header>
+            <h1 style={{ marginLeft: 20 }}>
+              Logo täs
+              <br />
+              {' '}
+              vissii
+            </h1>
+          </Header>
 
-        <PageContents>
-          <Switch>
-            <Route exact path="/">
-              <Etusivu />
-            </Route>
-            <Route path="/etusivu">
-              <Etusivu />
-            </Route>
-            <Route path="/tapahtumat/:id">
-              <Tapahtumat />
-            </Route>
-            <Route path="/tapahtumat">
-              <Tapahtumat />
-            </Route>
-            <Route path="/dashboard">
-              <h1>moro</h1>
-            </Route>
-          </Switch>
-        </PageContents>
+          <Sidebar>
+            <SidebarGrid>
+              {pages.map((sivu) => (
+                <SidebarItem active={location.pathname.toLowerCase().includes(sivu.toLowerCase())} key={sivu} onClick={() => changePage(sivu)}>{sivu}</SidebarItem>
+              ))}
+            </SidebarGrid>
+          </Sidebar>
 
-        {/* {page === 'Etusivu' && ( */}
-        {/*  <Etusivu /> */}
-        {/* )} */}
-
-        {/* {page === 'Tapahtumat' && ( */}
-        {/*  <Tapahtumat /> */}
-        {/* )} */}
-        {/* <h1>terve moi</h1> */}
-      </CustomGrid>
-    </div>
+          <PageContents>
+            <Switch>
+              <Route exact path="/">
+                <Etusivu />
+              </Route>
+              <Route path="/etusivu">
+                <Etusivu />
+              </Route>
+              <Route path="/raportit/:id">
+                <Raportit />
+              </Route>
+              <Route path="/raportit">
+                <Raportit />
+              </Route>
+              <Route path="/profiilit/:id">
+                <Profiilit />
+              </Route>
+              <Route path="/profiilit">
+                <Profiilit />
+              </Route>
+              <Route path="/poliisit">
+                <h1>poliseja</h1>
+              </Route>
+            </Switch>
+          </PageContents>
+        </CustomGrid>
+      </div>
+    </CustomContainer>
   );
 };
 

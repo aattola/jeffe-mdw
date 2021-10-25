@@ -3,7 +3,8 @@
   "workspaces": [
     "ui",
     "shared",
-    "app"
+    "app",
+    "dev"
   ],
   "scripts": {
     "build": "cd app && yarn build && cd .. && cd ui && yarn build && echo 'Built'",

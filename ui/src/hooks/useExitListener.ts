@@ -17,7 +17,7 @@ export const useExitListener = (visibleSetter: any) => {
     const keyHandler = (e: KeyboardEvent) => {
       if (LISTENED_KEYS.includes(e.code)) {
         setterRef.current();
-        fetchNui('hideFrame');
+        fetchNui('hideFrame', {}, false);
       }
     };
 

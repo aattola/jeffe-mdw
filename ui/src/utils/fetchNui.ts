@@ -12,6 +12,7 @@
 export async function fetchNui<T = any>(
   eventName: string,
   data?: any,
+  fetchServer: boolean = true,
 ): Promise<T> {
   const options = {
     method: 'post',
@@ -21,11 +22,25 @@ export async function fetchNui<T = any>(
     body: JSON.stringify(data),
   };
 
-  const resourceName = (window as any).GetParentResourceName
-    ? (window as any).GetParentResourceName()
-    : 'nui-frame-app';
+  const { ip } = (window as any);
+  const realIp = ip ?? 'localhost';
+  let resourceName = (window as any).GetParentResourceName
+    ? `https://${(window as any).GetParentResourceName()}`
+    : `http://${realIp}:3005/nui/jeffe-patja`;
+  // if (resourceName === false) {
+  //   console.log(`[fetchNui] ${eventName} peruutettiin koska selain`);
+  //   return { error: true, msg: 'error' };
+  // }
 
-  const resp = await fetch(`https://${resourceName}/${eventName}`, options);
+  if (fetchServer) {
+    const nimi = (window as any).GetParentResourceName
+      ? (window as any).GetParentResourceName()
+      : 'jeffe-patja';
+
+    resourceName = `http://${realIp}:3005/nui/${nimi}`;
+  }
+
+  const resp = await fetch(`${resourceName}/${eventName}`, options);
 
   const respFormatted = await resp.json().catch((err) => {
     const msg = {
@@ -36,6 +51,24 @@ export async function fetchNui<T = any>(
 
     return msg;
   });
+
+  if (!respFormatted.res.ok) {
+    if (eventName !== 'ip') {
+      const msg = {
+        error: true,
+        errorMsgForDev: 'res !ok',
+        data: respFormatted,
+        requestData: {
+          eventName,
+          resourceName,
+          options,
+        },
+      };
+
+      throw msg;
+    }
+    console.log('[fetchNui] Getting ip failed');
+  }
 
   return respFormatted;
 }

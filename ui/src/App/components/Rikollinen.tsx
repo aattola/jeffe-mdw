@@ -5,10 +5,10 @@ import {
   Chip, Divider, FormControlLabel, FormGroup, InputAdornment, TextField,
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import {
-  Add, Create, DeleteOutline, Save, Search,
-} from '@mui/icons-material';
-import { ICase } from '../pages/tapahtumat';
+import Add from '@mui/icons-material/Add';
+import DeleteOutline from '@mui/icons-material/DeleteOutline';
+import Save from '@mui/icons-material/Save';
+import { ICase } from '../pages/raportit';
 
 const Container = styled.div`
   display: flex;
