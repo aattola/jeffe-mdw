@@ -25,6 +25,18 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
     res.json({ res: resData });
   }
 
+  if (eventName === 'haerikollisia') {
+    if (data && data.hakusana) {
+      const dbRes = await fetchAll('SELECT * FROM patja_test_profiilit WHERE name LIKE @hakusana', {
+        '@hakusana': `%${data.hakusana}%`,
+      });
+
+      return cb({ ok: true, data: dbRes });
+    }
+
+    return cb({ ok: false, data: null });
+  }
+
   if (eventName === 'tapahtumat') {
     if (data && data.id) {
       const dbRes = await fetchAll('SELECT * FROM patja_tapahtumat WHERE id = @id', {
@@ -38,6 +50,26 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
   }
 
   if (eventName === 'tallennaTapahtuma') {
+    if (data && !data.id) {
+      const tempId = Date.now();
+      await execute('INSERT INTO patja_tapahtumat (name, description, data, timestamp, rikolliset) VALUES (@tempid, null, \'{}\', DEFAULT, \'{}\');', {
+        '@tempid': tempId,
+      });
+
+      const dbRes = await fetchAll('SELECT * FROM patja_tapahtumat WHERE name = @tempid', {
+        '@tempid': tempId,
+      });
+
+      await execute('UPDATE patja_tapahtumat t SET t.name = @name, t.description = @desc, t.data = @data, t.rikolliset = @rikolliset WHERE t.name = @tempid', {
+        '@name': data.name ?? '',
+        '@desc': data.description ?? '',
+        '@data': data.data ?? {},
+        '@rikolliset': data.rikolliset ?? {},
+        '@tempid': tempId,
+      });
+
+      return cb({ ok: true, data: dbRes });
+    }
     if (!data && !data.id) return cb({ ok: false, error: 'data puuttuu' });
 
     const dbRes = await execute('UPDATE patja_tapahtumat t SET t.name = @name, t.description = @desc, t.data = @data, t.rikolliset = @rikolliset WHERE t.id = @id', {

@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Checkbox,
-  Chip, Divider, FormControlLabel, FormGroup, InputAdornment, TextField,
+  Chip, Divider, FormControlLabel, FormGroup, Input, InputAdornment, TextField,
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
 import ImageIcon from '@mui/icons-material/Image';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 const Container = styled.div`
   display: flex;
   gap: 10px;
   flex-direction: column;
-  
+  position: relative;
+
   & > * {
     border-radius: 2px;
   }
@@ -62,15 +64,15 @@ type ProfileProps = {
 }
 
 const Profile = ({ profileData, id }: ProfileProps) => {
-  const history = useHistory();
-  console.log(profileData);
+  const [desc, setDesc] = useState(profileData.description);
+
   return (
     <Container>
       <TextContainer>
         <InfoBar>
-          {profileData.image && (
-            <img style={{ maxWidth: '200px', marginRight: 20 }} src={profileData.image} alt={profileData.name} />
-          )}
+
+          <img style={{ maxWidth: '200px', marginRight: 20 }} src={profileData.image ?? 'https://i.imgur.com/P3AdNRz.png'} alt={profileData.name} />
+
           <TextFieldGrid style={{ marginTop: 10 }}>
             <TextField
               InputProps={{
@@ -114,13 +116,28 @@ const Profile = ({ profileData, id }: ProfileProps) => {
 
         <Divider sx={{ marginY: 2 }} />
 
-        <TextField
-          placeholder="Selityksiä"
-          multiline
-          value={profileData.description}
-          minRows={8}
-          fullWidth
-        />
+        <Scrollbars
+          autoHide
+          autoHideTimeout={1000}
+          autoHideDuration={200}
+        >
+          <Input
+            placeholder="Selityksiä"
+            multiline
+            value={(desc ?? undefined)}
+            minRows={15}
+            disableUnderline
+            onChange={(e) => setDesc(e.target.value)}
+            sx={{
+              backgroundColor: '#212e3e',
+              flex: 1,
+              width: '100%',
+              textarea: {
+                padding: '5px 10px',
+              },
+            }}
+          />
+        </Scrollbars>
       </TextContainer>
     </Container>
   );

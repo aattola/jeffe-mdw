@@ -27,6 +27,8 @@ const Etusivu = () => (
   <div>
     <Grid>
       <SearchList name="Testi lista" items={DemoItems} />
+
+      <h1>HÖÖÖHÖÖÖ ETUSIVU TÄMÄ ON ETUSIVU </h1>
     </Grid>
   </div>
 );

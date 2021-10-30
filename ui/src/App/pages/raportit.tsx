@@ -35,7 +35,9 @@ export interface ICase {
 }
 
 const Raportit = () => {
-  const { data, isSuccess, isError } = useQuery('tapahtumat', fetchTapahtumat);
+  const {
+    data, isSuccess, isError, refetch,
+  } = useQuery('tapahtumat', fetchTapahtumat);
   const { id } = useParams<{id?: string}>();
   const {
     mutate, isSuccess: success, data: tapahtuma, isLoading,
@@ -53,13 +55,13 @@ const Raportit = () => {
         {isSuccess && (
           <>
             <SearchList name="Raportit" items={data.res.data} />
-            {id && (
+            {id ? (
               <>
                 {success ? (
                   <>
                     {tapahtuma.res.data[0] ? (
                       <>
-                        <Case loading={false} name={data.res.data.name} caseData={tapahtuma.res.data[0]} id={id} />
+                        <Case isCreate={false} loading={false} name={data.res.data.name} caseData={tapahtuma.res.data[0]} />
                         <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
                       </>
                     ) : (
@@ -68,6 +70,7 @@ const Raportit = () => {
                   </>
                 ) : (
                   <Case
+                    isCreate
                     name=""
                     loading
                     caseData={{
@@ -78,11 +81,24 @@ const Raportit = () => {
                       rikolliset: '{}',
                       timestamp: (Date.now() as any),
                     }}
-                    id={id}
                   />
 
                 )}
               </>
+            ) : (
+              <Case
+                name=""
+                loading={false}
+                isCreate
+                caseData={{
+                  id: 123456789078923897,
+                  name: '',
+                  description: '',
+                  data: '{}',
+                  rikolliset: '{}',
+                  timestamp: (Date.now() as any),
+                }}
+              />
             )}
           </>
         )}

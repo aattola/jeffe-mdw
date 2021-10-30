@@ -24,6 +24,8 @@ const CustomGrid = styled.div`
 const Header = styled.div`
   grid-column: 1 / 3;
   background: #2a3c52;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
   border-bottom: 2px solid #42a5f5;
 `;
 

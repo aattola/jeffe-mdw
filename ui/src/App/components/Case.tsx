@@ -72,9 +72,9 @@ interface Items {
 
 type CaseProps = {
   name: string
-  id: string
   caseData: ICase
   loading: boolean
+  isCreate: boolean
 }
 
 async function mutateTapahtuma(data: ICase) {
@@ -89,7 +89,9 @@ async function deleteCase(id: number) {
   return fetchNui('poistaTapahtuma', { id });
 }
 
-const Case = ({ id, caseData, loading: lataa }: CaseProps) => {
+const Case = ({
+  caseData, loading: lataa, isCreate,
+}: CaseProps) => {
   const history = useHistory();
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading } = useMutation(['case', caseData.id], mutateTapahtuma);
@@ -108,8 +110,13 @@ const Case = ({ id, caseData, loading: lataa }: CaseProps) => {
   }
 
   async function handleCreateNew() {
-    await newAsync();
-    await queryClient.invalidateQueries('tapahtumat');
+    // await newAsync();
+    // await queryClient.invalidateQueries('tapahtumat');
+    history.push('/raportit');
+
+    // return setTimeout(() => {
+    //   history.push(`/raportit/${latestId}`);
+    // }, 500);
   }
 
   async function handleSave() {
@@ -120,7 +127,15 @@ const Case = ({ id, caseData, loading: lataa }: CaseProps) => {
       data: JSON.stringify({ tags: tagit }),
     };
 
-    await mutateAsync(saveData);
+    if (caseData.id === 123456789078923897) {
+      // @ts-ignore
+      saveData.id = undefined;
+    }
+
+    const data = await mutateAsync(saveData);
+    if (data?.res?.data[0]?.id) {
+      history.push(`/raportit/${data.res.data[0].id}`);
+    }
     await queryClient.invalidateQueries('tapahtumat');
   }
 
@@ -146,17 +161,33 @@ const Case = ({ id, caseData, loading: lataa }: CaseProps) => {
         }}
         />
       )}
+      {isLoading && (
+        <BorderLinearProgress style={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '8px',
+        }}
+        />
+      )}
       <TextContainer style={{
         flex: 1, display: 'grid', gridTemplateRows: 'auto auto 1fr', gridGap: 2,
       }}
       >
         <InfoBar>
           Raportti #
-          {lataa ? '' : caseData.id}
+          {caseData.id !== 123456789078923897 ? (
+            <>
+              {lataa ? '' : caseData.id}
+            </>
+          ) : (
+            <span />
+          )}
 
           <div style={{ marginLeft: 'auto' }}>
-            <DeleteOutline onClick={handleDeleteTapahtuma} style={{ cursor: 'pointer' }} />
-            <Add onClick={handleCreateNew} style={{ cursor: 'pointer' }} />
+            {!isCreate && (
+              <>
+                <DeleteOutline onClick={handleDeleteTapahtuma} style={{ cursor: 'pointer' }} />
+                <Add onClick={handleCreateNew} style={{ cursor: 'pointer' }} />
+              </>
+            )}
             <Save onClick={handleSave} style={{ cursor: 'pointer' }} />
           </div>
         </InfoBar>
