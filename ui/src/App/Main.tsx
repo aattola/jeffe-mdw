@@ -9,6 +9,7 @@ import {
 import Etusivu from './pages/etusivu';
 import Raportit from './pages/raportit';
 import Profiilit from './pages/profiilit';
+import Rikosnimikkeet from './pages/rikosnimikkeet';
 
 const CustomContainer = styled.div`
   height: 100vh;
@@ -65,7 +66,7 @@ const PageContents = styled.div`
   display: flex;
 `;
 
-const pages = ['Etusivu', 'Raportit', 'Profiilit', 'Poliisit'];
+const pages = ['Etusivu', 'Raportit', 'Profiilit', 'Poliisit', 'Rikosnimikkeet'];
 
 const tabs = [
   {
@@ -136,6 +137,9 @@ const Main = () => {
               </Route>
               <Route path="/poliisit">
                 <h1>poliseja</h1>
+              </Route>
+              <Route path="/rikosnimikkeet">
+                <Rikosnimikkeet addMode={false} />
               </Route>
             </Switch>
           </PageContents>

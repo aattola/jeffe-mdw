@@ -2,19 +2,33 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Checkbox,
-  Chip, Divider, FormControlLabel, FormGroup, InputAdornment, TextField,
+  Chip,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  InputAdornment,
+  InputLabel,
+  MenuItem, Select,
+  SelectChangeEvent,
+  TextField,
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Add from '@mui/icons-material/Add';
 import Save from '@mui/icons-material/Save';
 import DeleteOutline from '@mui/icons-material/Remove';
+import { useMutation, useQueryClient } from 'react-query';
 import { ICase } from '../pages/raportit';
 import PersonDialog from './PersonDialog';
+import SyyteDialog from './SyyteDialog';
+import { fetchNui } from '../../utils/fetchNui';
+import { BorderLinearProgress } from './Case';
 
 const Container = styled.div`
   display: flex;
   gap: 10px;
   flex-direction: column;
+  position: relative;
   
   & > * {
     border-radius: 2px;
@@ -48,6 +62,10 @@ const TextContainer = styled.div`
   padding: 10px;
 `;
 
+async function mutateTapahtuma(data: {id: number, rikolliset: string, data: any}) {
+  return fetchNui('tallennaTapahtuma', data);
+}
+
 interface Items {
   name: string
   id: number
@@ -59,24 +77,73 @@ type RikollinenProps = {
   caseData: ICase
 }
 
+interface Syyte {
+  id: number
+  key: number
+  label: string
+  rikollinen: number
+  sakko: number
+}
+
 const Rikollinen = ({ id, caseData }: RikollinenProps) => {
+  const rikolliset = JSON.parse(caseData.rikolliset);
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [criminals, setCriminals] = useState([]);
+  const [chargesOpen, setChargesOpen] = useState(false);
+  const [kriminaali, setKriminaali] = useState({ label: 'ei', id: 0 });
+  const [criminals, setCriminals] = useState(rikolliset.criminals ?? []);
+  const [charges, setCharges] = useState(rikolliset.charges ?? []);
+  const [vahennykset, setVahennykset] = React.useState(rikolliset.vahennykset ?? 1);
+  const { mutate, isLoading } = useMutation(['case', caseData.id], mutateTapahtuma);
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setVahennykset(Number(event.target.value));
+  };
 
   const handleRemove = (crimId: number) => {
     const newCriminals = criminals.filter((c: any) => c.id !== crimId);
     setCriminals(newCriminals);
   };
 
+  const openMenu = (crimmi: any) => {
+    setKriminaali(crimmi);
+    setChargesOpen(true);
+  };
+
+  const handleSave = async () => {
+    const saveRikolliset = {
+      criminals,
+      charges,
+      vahennykset,
+    };
+
+    const saveData = {
+      ...caseData,
+      id: caseData.id,
+      rikolliset: JSON.stringify(saveRikolliset),
+    };
+
+    console.log({ saveData });
+
+    await mutate(saveData);
+    await queryClient.invalidateQueries('tapahtumat');
+  };
+
   return (
     <Container>
+      {isLoading && (
+        <BorderLinearProgress style={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '8px',
+        }}
+        />
+      )}
       <TextContainer>
         <InfoBar style={{ marginBottom: 0 }}>
           Rikolliset
 
           <div style={{ marginLeft: 'auto' }}>
             <Add onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} />
-            <Save style={{ marginLeft: 'auto', cursor: 'pointer' }} />
+            <Save onClick={handleSave} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
           </div>
         </InfoBar>
 
@@ -84,41 +151,109 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
 
       </TextContainer>
 
-      {criminals.map((criminal: {label: string, id: number}) => (
-        <TextContainer key={criminal.id}>
-          <InfoBar>
-            <span>{criminal.label}</span>
-            <div style={{ marginLeft: 'auto' }}>
-              <DeleteOutline onClick={() => handleRemove(criminal.id)} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
-            </div>
-          </InfoBar>
+      <SyyteDialog rikollinen={kriminaali} open={chargesOpen} setOpen={setChargesOpen} charges={charges} setCharges={setCharges} />
 
-          <Divider sx={{ marginY: 2 }} />
+      {criminals.map((criminal: {label: string, id: number}) => {
+        const currCharges: Syyte[] = charges.filter((a: any) => a.rikollinen === criminal.id);
+        const total = currCharges[0] ? currCharges.reduce((acc, currentValue) => acc + currentValue.sakko, 0) : 0;
 
-          <InfoBar>
-            <span>Syytteet:</span>
-            <Add style={{ marginLeft: 'auto', cursor: 'pointer' }} />
-          </InfoBar>
-          <ChipGrid>
-            {/* <Chip label="RDM" onDelete={() => null} /> */}
-            {/* <Chip label="Tori kkontenttia" onDelete={() => null} /> */}
-            {/* <Chip label="Rauhanrekka" onDelete={() => null} /> */}
-          </ChipGrid>
+        return (
+          <TextContainer key={criminal.id} style={{ padding: '15px 15px' }}>
+            <InfoBar>
+              <span>{criminal.label}</span>
+              <div style={{ marginLeft: 'auto' }}>
+                <DeleteOutline onClick={() => handleRemove(criminal.id)} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
+              </div>
+            </InfoBar>
 
-          <Divider sx={{ marginY: 2 }} />
+            <Divider sx={{ marginY: 2 }} />
 
-          <FormGroup>
-            <FormControlLabel control={<Checkbox />} label="Etsintäkuuluta" />
-          </FormGroup>
+            <InfoBar>
+              <span>Syytteet:</span>
+              {/* <Add onClick={() => openMenu(criminal)} style={{ marginLeft: 'auto', cursor: 'pointer' }} /> */}
+            </InfoBar>
 
-          <Divider sx={{ marginY: 2 }} />
+            <ChipGrid>
+              {currCharges.map((syytteet: Syyte) => (
+                <Chip key={syytteet.key} label={syytteet.label} />
+              ))}
+              <Chip label="Muokkaa" variant="outlined" onClick={() => openMenu(criminal)} />
+            </ChipGrid>
 
-          <FormGroup sx={{ flexDirection: 'row', gap: 5 }}>
-            <FormControlLabel control={<Checkbox disabled />} label="Syyllinen" />
-            <FormControlLabel control={<Checkbox />} label="Prosessoitu" />
-          </FormGroup>
-        </TextContainer>
-      ))}
+            <Divider sx={{ marginY: 2 }} />
+
+            <FormGroup>
+              <FormControlLabel control={<Checkbox />} label="Etsintäkuuluta" />
+            </FormGroup>
+
+            <Divider sx={{ marginY: 2 }} />
+
+            <InfoBar style={{ margin: '10px 0px' }}>
+              <FormControl
+                variant="standard"
+                sx={{
+                  minWidth: 120, width: '100%',
+                }}
+              >
+                <InputLabel id="vahennykset">Vähennykset</InputLabel>
+                <Select
+                  fullWidth
+                  labelId="vahennykset"
+                  value={(vahennykset as any)}
+                  onChange={handleChange}
+                  label="Vahennykset"
+                >
+                  <MenuItem value={1}>
+                    0% /
+                    {' '}
+                    {total}
+                    €
+                  </MenuItem>
+                  <MenuItem value={0.90}>
+                    10% /
+                    {' '}
+                    {total * 0.90}
+                    €
+                  </MenuItem>
+                  <MenuItem value={0.75}>
+                    25% /
+                    {' '}
+                    {total * 0.75}
+                    €
+                  </MenuItem>
+                  <MenuItem value={0.50}>
+                    50% /
+                    {' '}
+                    {total * 0.50}
+                    €
+                  </MenuItem>
+                  <MenuItem value={0.25}>
+                    75% /
+                    {' '}
+                    {total * 0.25}
+                    €
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </InfoBar>
+
+            <InfoBar>
+              <span>
+                Yhteensä:
+                {' '}
+                {total * vahennykset}
+                €
+              </span>
+
+            </InfoBar>
+
+            <FormGroup sx={{ flexDirection: 'row', gap: 5 }}>
+              <FormControlLabel control={<Checkbox disabled />} label="Syyllinen" />
+              <FormControlLabel control={<Checkbox />} label="Prosessoitu" />
+            </FormGroup>
+          </TextContainer>
+        );
+      })}
     </Container>
   );
 };

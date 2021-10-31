@@ -50,6 +50,9 @@ const TextContainer = styled.div`
   background: #2a3c52;
   padding: 10px;
   flex: 1;
+  
+  display: flex;
+  flex-direction: column;
 `;
 
 interface Items {
@@ -59,11 +62,10 @@ interface Items {
 }
 
 type ProfileProps = {
-  id: string
   profileData: any
 }
 
-const Profile = ({ profileData, id }: ProfileProps) => {
+const Profile = ({ profileData }: ProfileProps) => {
   const [desc, setDesc] = useState(profileData.description);
 
   return (
@@ -125,7 +127,7 @@ const Profile = ({ profileData, id }: ProfileProps) => {
             placeholder="Selityksiä"
             multiline
             value={(desc ?? undefined)}
-            minRows={15}
+            minRows={20}
             disableUnderline
             onChange={(e) => setDesc(e.target.value)}
             sx={{

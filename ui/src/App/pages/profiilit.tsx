@@ -85,10 +85,10 @@ const Profiilit = () => {
           {isSuccess && (
             <SearchList name="Profiilit" showTimestamp={false} items={data.res.data} />
           )}
-          {id && (
+          {id ? (
             <>
               {success ? (
-                <Profile id={id} profileData={profiili.res.data[0]} />
+                <Profile profileData={profiili.res.data[0]} />
               ) : (
                 <div style={{ position: 'relative' }}>
                   <BorderLinearProgress style={{
@@ -96,7 +96,6 @@ const Profiilit = () => {
                   }}
                   />
                   <Profile
-                    id={id}
                     profileData={{
                       name: '',
                       image: '',
@@ -108,6 +107,15 @@ const Profiilit = () => {
               )}
 
             </>
+          ) : (
+            <Profile
+              profileData={{
+                name: '',
+                image: 'https://i.imgur.com/P3AdNRz.png',
+                id: '',
+                description: '',
+              }}
+            />
           )}
           {(isError ?? err) && (
             <h1>virhe</h1>

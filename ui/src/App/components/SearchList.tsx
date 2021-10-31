@@ -6,10 +6,14 @@ import { useHistory } from 'react-router-dom';
 import Search from '@mui/icons-material/Search';
 import fi from 'date-fns/locale/fi';
 import { formatDistance } from 'date-fns';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 const Container = styled.div`
   background: #2a3c52;
   padding: 10px;
+  
+  //display: grid;
+  //grid-template-rows: auto 1fr;
 `;
 
 const InfoBar = styled.div`
@@ -97,6 +101,13 @@ const SearchList = ({ name, items, showTimestamp = true }: SearchListProps) => {
           variant="standard"
         />
       </InfoBar>
+      {/* <Scrollbars */}
+      {/*  autoHide */}
+      {/*  autoHideTimeout={1000} */}
+      {/*  autoHideDuration={200} */}
+      {/*  height="100%" */}
+      {/*  width="100%" */}
+      {/* > */}
       <Grid>
         {items.map((item) => (
           <GridItem
@@ -113,20 +124,21 @@ const SearchList = ({ name, items, showTimestamp = true }: SearchListProps) => {
                 {item.id}
               </span>
               {showTimestamp && (
-                <span style={{ marginLeft: 'auto' }}>
-                  {formatDistance(
-                    new Date(),
-                    new Date(item.timestamp),
-                    { locale: fi },
-                  )}
-                  {' '}
-                  sitten
-                </span>
+              <span style={{ marginLeft: 'auto' }}>
+                {formatDistance(
+                  new Date(),
+                  new Date(item.timestamp),
+                  { locale: fi },
+                )}
+                {' '}
+                sitten
+              </span>
               )}
             </ItemGrid>
           </GridItem>
         ))}
       </Grid>
+      {/* </Scrollbars> */}
     </Container>
   );
 };

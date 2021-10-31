@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { CircularProgress, LinearProgress, linearProgressClasses } from '@mui/material';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import SearchList from '../components/SearchList';
 import Case from '../components/Case';
 import Rikollinen from '../components/Rikollinen';
@@ -55,6 +56,7 @@ const Raportit = () => {
         {isSuccess && (
           <>
             <SearchList name="Raportit" items={data.res.data} />
+
             {id ? (
               <>
                 {success ? (
@@ -62,7 +64,10 @@ const Raportit = () => {
                     {tapahtuma.res.data[0] ? (
                       <>
                         <Case isCreate={false} loading={false} name={data.res.data.name} caseData={tapahtuma.res.data[0]} />
-                        <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
+
+                        <Scrollbars autoHide>
+                          <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
+                        </Scrollbars>
                       </>
                     ) : (
                       <h1>Huijaatko koska tuommoisella id:llä ei löydy mitään???</h1>

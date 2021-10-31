@@ -25,9 +25,14 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
     res.json({ res: resData });
   }
 
+  if (eventName === 'rikosnimikkeet') {
+    const dbRes = await fetchAll('SELECT * FROM patja_rikokset');
+    return cb({ ok: true, data: dbRes });
+  }
+
   if (eventName === 'haerikollisia') {
     if (data && data.hakusana) {
-      const dbRes = await fetchAll('SELECT * FROM patja_test_profiilit WHERE name LIKE @hakusana', {
+      const dbRes = await fetchAll('SELECT * FROM patja_test_profiilit WHERE name LIKE @hakusana LIMIT 20', {
         '@hakusana': `%${data.hakusana}%`,
       });
 

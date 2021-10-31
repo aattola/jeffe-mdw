@@ -64,6 +64,7 @@ __metadata:
     eslint-plugin-react: ^7.25.1
     eslint-plugin-react-hooks: ^4.2.0
     fivem-mysql-async-js: ^0.1.2
+    fuse.js: ^6.4.6
     mobx: ^6.3.5
     mobx-react: ^7.2.1
     react: ^17.0.2
@@ -7929,6 +7930,13 @@ fsevents@^1.2.7:
   version: 1.0.1
   resolution: "functional-red-black-tree@npm:1.0.1"
   checksum: ca6c170f37640e2d94297da8bb4bf27a1d12bea3e00e6a3e007fd7aa32e37e000f5772acf941b4e4f3cf1c95c3752033d0c509af157ad8f526e7f00723b9eb9f
+  languageName: node
+  linkType: hard
+
+"fuse.js@npm:^6.4.6":
+  version: 6.4.6
+  resolution: "fuse.js@npm:6.4.6"
+  checksum: 012dfacdc9a3c065d05d031b4eaaad7dd460f66dca100fcef182ed4e70a6b763b6753071702589d0b28def34b48ad077f01426d4ac1d75ef374564f6baa943fd
   languageName: node
   linkType: hard
 

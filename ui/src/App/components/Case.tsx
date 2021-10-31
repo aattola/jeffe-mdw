@@ -52,7 +52,7 @@ const TextContainer = styled.div`
   padding: 10px;
 `;
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }: any) => ({
+export const BorderLinearProgress = styled(LinearProgress)(({ theme }: any) => ({
   height: 10,
   borderRadius: 3,
   [`&.${linearProgressClasses.colorPrimary}`]: {
@@ -172,13 +172,15 @@ const Case = ({
       }}
       >
         <InfoBar>
-          Raportti #
+
           {caseData.id !== 123456789078923897 ? (
             <>
+              Raportti #
+              {' '}
               {lataa ? '' : caseData.id}
             </>
           ) : (
-            <span />
+            <span>Luo uusi raportti</span>
           )}
 
           <div style={{ marginLeft: 'auto' }}>
