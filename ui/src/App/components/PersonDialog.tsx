@@ -52,7 +52,7 @@ export default function PersonDialog({
 
     (timeout as any).current = setTimeout(() => {
       mutate({ hakusana: e.target.value });
-    }, 500);
+    }, 250);
   };
 
   const handleClose = () => {

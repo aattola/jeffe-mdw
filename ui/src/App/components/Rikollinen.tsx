@@ -145,13 +145,13 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
             <Add onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} />
             <Save onClick={handleSave} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
           </div>
+          <SyyteDialog rikollinen={kriminaali} open={chargesOpen} setOpen={setChargesOpen} charges={charges} setCharges={setCharges} />
+
         </InfoBar>
 
         <PersonDialog personnel={criminals} open={open} setOpen={setOpen} setPersonnel={setCriminals} />
 
       </TextContainer>
-
-      <SyyteDialog rikollinen={kriminaali} open={chargesOpen} setOpen={setChargesOpen} charges={charges} setCharges={setCharges} />
 
       {criminals.map((criminal: {label: string, id: number}) => {
         const currCharges: Syyte[] = charges.filter((a: any) => a.rikollinen === criminal.id);

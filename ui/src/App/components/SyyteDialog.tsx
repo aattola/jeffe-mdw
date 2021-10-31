@@ -62,12 +62,12 @@ export default function SyyteDialog({
         onClose={handleClose}
         style={{ padding: 60 }}
       >
-        <DialogTitle>
+        <DialogTitle style={{ background: '#272e3c' }}>
           Lisää rikkeitä rikolliselle
           {' '}
           {rikollinen.label}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent style={{ background: '#272e3c' }}>
           <Grid>
             <ChargeGrid>
               <Scrollbars
@@ -96,7 +96,7 @@ export default function SyyteDialog({
             <Rikosnimikkeet addMode addNimike={addNimike} />
           </Grid>
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ background: '#272e3c' }}>
           <Button onClick={handleClose} autoFocus>
             Tallenna
           </Button>
