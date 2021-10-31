@@ -9,6 +9,7 @@ import Rikollinen from '../components/Rikollinen';
 import { fetchNui } from '../../utils/fetchNui';
 import ErrorBoundary from '../../ErrorBoundary';
 import Profile from '../components/Profile';
+import ProfileInfo from '../components/ProfileInfo';
 
 const Grid = styled.div`
   display: grid;
@@ -88,7 +89,10 @@ const Profiilit = () => {
           {id ? (
             <>
               {success ? (
-                <Profile profileData={profiili.res.data[0]} />
+                <>
+                  <Profile profileData={profiili.res.data[0]} />
+                  <ProfileInfo id={profiili.res.data[0].id} profileData={profiili} />
+                </>
               ) : (
                 <div style={{ position: 'relative' }}>
                   <BorderLinearProgress style={{

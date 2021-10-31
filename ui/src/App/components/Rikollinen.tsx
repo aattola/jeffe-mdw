@@ -53,7 +53,7 @@ const Grid = styled.div`
 
 const ChipGrid = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 6px;
   flex-wrap: wrap;
 `;
 
@@ -157,6 +157,19 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
         const currCharges: Syyte[] = charges.filter((a: any) => a.rikollinen === criminal.id);
         const total = currCharges[0] ? currCharges.reduce((acc, currentValue) => acc + currentValue.sakko, 0) : 0;
 
+        const currCharget: any = {};
+
+        currCharges.forEach((r: any) => {
+          const k = currCharget[r.id];
+          if (k) {
+            currCharget[r.id] = [...k, r];
+          } else {
+            currCharget[r.id] = [r];
+          }
+        });
+
+        console.log({ currCharget });
+
         return (
           <TextContainer key={criminal.id} style={{ padding: '15px 15px' }}>
             <InfoBar>
@@ -174,10 +187,10 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
             </InfoBar>
 
             <ChipGrid>
-              {currCharges.map((syytteet: Syyte) => (
-                <Chip key={syytteet.key} label={syytteet.label} />
+              <Chip style={{ background: 'white', color: 'black' }} label="Muokkaa" variant="outlined" onClick={() => openMenu(criminal)} />
+              {Object.keys(currCharget).map((index) => (
+                <Chip style={{ background: 'black' }} key={index} variant="filled" label={`${currCharget[index].length} ${currCharget[index][0].label}`} />
               ))}
-              <Chip label="Muokkaa" variant="outlined" onClick={() => openMenu(criminal)} />
             </ChipGrid>
 
             <Divider sx={{ marginY: 2 }} />

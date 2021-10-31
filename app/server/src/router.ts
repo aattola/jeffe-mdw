@@ -77,12 +77,21 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
     }
     if (!data && !data.id) return cb({ ok: false, error: 'data puuttuu' });
 
-    const dbRes = await execute('UPDATE patja_tapahtumat t SET t.name = @name, t.description = @desc, t.data = @data, t.rikolliset = @rikolliset WHERE t.id = @id', {
+    let rikollisetString = '_';
+    const rikollisetArray = JSON.parse(data?.rikolliset)?.criminals;
+    if (rikollisetArray) {
+      rikollisetArray.forEach((rikollinen: {label: string, id: number}) => {
+        rikollisetString += `${rikollinen.id}_`;
+      });
+    }
+
+    const dbRes = await execute('UPDATE patja_tapahtumat t SET t.name = @name, t.description = @desc, t.data = @data, t.rikolliset = @rikolliset, t.rikollisetId = @rikollisetId WHERE t.id = @id', {
       '@name': data.name,
       '@desc': data.description,
       '@data': data.data,
       '@rikolliset': data.rikolliset,
       '@id': data.id,
+      '@rikollisetId': rikollisetString,
     });
 
     return cb({ ok: true, data: dbRes });
@@ -107,7 +116,13 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
         '@id': data.id,
       });
 
-      return cb({ ok: true, data: dbRes });
+      const ressi = await fetchAll('SELECT rikolliset, id FROM patja_tapahtumat WHERE rikollisetId LIKE @id', {
+        '@id': `%_${data.id}_%`,
+      });
+
+      const ressiRes = ressi[0] ? ressi.map((ress: any) => ({ id: ress.id, rikolliset: JSON.parse(ress.rikolliset) })) : [];
+
+      return cb({ ok: true, data: dbRes, rikokset: ressiRes });
     }
 
     const dbRes = await fetchAll('SELECT * FROM patja_test_profiilit ORDER BY id DESC LIMIT 40');
