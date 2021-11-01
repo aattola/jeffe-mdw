@@ -10,9 +10,11 @@ import Etusivu from './pages/etusivu';
 import Raportit from './pages/raportit';
 import Profiilit from './pages/profiilit';
 import Rikosnimikkeet from './pages/rikosnimikkeet';
+import useHover from './components/useHover';
 
-const CustomContainer = styled.div`
+const CustomContainer = styled.div<{see: boolean}>`
   height: 100vh;
+  opacity: ${(props) => (!props.see ? 1 : 0.35)};
 `;
 
 const CustomGrid = styled.div`
@@ -87,18 +89,17 @@ const tabs = [
 const Main = () => {
   const history = useHistory();
   const location = useLocation<string>();
-  const [page, setPage] = useState('Etusivu');
+  const [hoverRef, isHovered] = useHover();
 
   function changePage(sivu: string) {
-    setPage(sivu);
     history.push(`/${sivu}`);
   }
 
   return (
-    <CustomContainer>
+    <CustomContainer see={(isHovered as any)}>
       <div style={{ padding: '40px', height: 'calc(100vh - 80px)' }}>
         <CustomGrid>
-          <Header>
+          <Header ref={(hoverRef as any)}>
             <h1 style={{ marginLeft: 20 }}>
               Logo täs
               <br />

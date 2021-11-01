@@ -54,6 +54,41 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
     return cb({ ok: true, data: dbRes });
   }
 
+  if (eventName === 'tallennaProfiili') {
+    if (data && !data.id) {
+      const tempId = Date.now();
+      await execute('INSERT INTO patja_test_profiilit (name) VALUES (@tempid);', {
+        '@tempid': tempId,
+      });
+
+      const dbRes = await fetchAll('SELECT * FROM patja_test_profiilit WHERE name = @tempid', {
+        '@tempid': tempId,
+      });
+
+      await execute('UPDATE patja_test_profiilit t SET name = @name, cid = @cid, image = @image, description = @desc WHERE t.name = @tempid', {
+        '@name': data.name,
+        '@cid': data.cid,
+        '@image': data.image,
+        '@desc': data.description,
+        '@tempid': tempId,
+      });
+
+      return cb({ ok: true, data: dbRes });
+    }
+
+    if (data && data.id) {
+      const dbRes = await execute('UPDATE patja_test_profiilit t SET name = @name, cid = @cid, image = @image, description = @desc WHERE t.id = @id', {
+        '@name': data.name,
+        '@cid': data.cid,
+        '@image': data.image,
+        '@desc': data.description,
+        '@id': data.id,
+      });
+
+      return cb({ ok: true, data: dbRes });
+    }
+  }
+
   if (eventName === 'tallennaTapahtuma') {
     if (data && !data.id) {
       const tempId = Date.now();

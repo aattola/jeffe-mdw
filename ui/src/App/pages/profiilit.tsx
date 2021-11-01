@@ -88,18 +88,19 @@ const Profiilit = () => {
           )}
           {id ? (
             <>
-              {success ? (
+              {!isLoading ? (
                 <>
-                  <Profile profileData={profiili.res.data[0]} />
+                  <Profile isCreate={false} profileData={profiili.res.data[0]} />
                   <ProfileInfo id={profiili.res.data[0].id} profileData={profiili} />
                 </>
               ) : (
                 <div style={{ position: 'relative' }}>
                   <BorderLinearProgress style={{
-                    position: 'absolute', top: 0, left: 0, width: '100%', height: '8px',
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '8px', zIndex: 231,
                   }}
                   />
                   <Profile
+                    isCreate={false}
                     profileData={{
                       name: '',
                       image: '',
@@ -113,6 +114,7 @@ const Profiilit = () => {
             </>
           ) : (
             <Profile
+              isCreate
               profileData={{
                 name: '',
                 image: 'https://i.imgur.com/P3AdNRz.png',

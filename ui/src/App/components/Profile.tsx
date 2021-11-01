@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import {
   Checkbox,
@@ -9,6 +9,11 @@ import PersonIcon from '@mui/icons-material/Person';
 import ImageIcon from '@mui/icons-material/Image';
 import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import Add from '@mui/icons-material/Add';
+import Save from '@mui/icons-material/Save';
+import { useMutation, useQueryClient } from 'react-query';
+import { ICase } from '../pages/raportit';
+import { fetchNui } from '../../utils/fetchNui';
 
 const Container = styled.div`
   display: flex;
@@ -55,6 +60,10 @@ const TextContainer = styled.div`
   flex-direction: column;
 `;
 
+async function mutateTapahtuma(data: any) {
+  return fetchNui('tallennaProfiili', data);
+}
+
 interface Items {
   name: string
   id: number
@@ -63,18 +72,71 @@ interface Items {
 
 type ProfileProps = {
   profileData: any
+  isCreate?: boolean
 }
 
-const Profile = ({ profileData }: ProfileProps) => {
+const Profile = ({ profileData, isCreate = false }: ProfileProps) => {
+  const queryClient = useQueryClient();
+  const history = useHistory();
+  const { mutateAsync, isLoading } = useMutation(['profiili', profileData.id], mutateTapahtuma);
+  const [name, setName] = useState(profileData.name);
+  const [cid, setCid] = useState(profileData.cid);
+  const [image, setImage] = useState(profileData.image ?? 'https://i.imgur.com/P3AdNRz.png');
   const [desc, setDesc] = useState(profileData.description);
+  const [inputError, setError] = useState(false);
+
+  useEffect(() => {
+    setName(profileData.name);
+    setCid(profileData.cid);
+    setImage(profileData.image ?? 'https://i.imgur.com/P3AdNRz.png');
+    setDesc(profileData.description);
+  }, [profileData]);
+
+  const handleSave = async () => {
+    const saveData = {
+      ...profileData,
+      name,
+      cid,
+      image,
+      description: desc,
+    };
+
+    if (!name && !cid) {
+      setTimeout(() => {
+        setError(false);
+      }, 2000);
+      return setError(true);
+    }
+
+    const data = await mutateAsync(saveData);
+    if (data?.res?.data[0]?.id) {
+      history.push(`/profiilit/${data.res.data[0].id}`);
+    }
+    await queryClient.invalidateQueries('profiilit');
+    await queryClient.invalidateQueries(['profiili', profileData.id]);
+  };
 
   return (
     <Container>
       <TextContainer>
         <InfoBar>
-
-          <img style={{ maxWidth: '200px', marginRight: 20 }} src={profileData.image ?? 'https://i.imgur.com/P3AdNRz.png'} alt={profileData.name} />
-
+          {isCreate ? (
+            <span>Luo uusi profiili</span>
+          ) : (
+            <span>
+              Profiili #
+              {profileData.id}
+            </span>
+          )}
+          <div style={{ marginLeft: 'auto' }}>
+            {!isCreate && (
+              <Add onClick={() => history.push('/profiilit')} style={{ cursor: 'pointer' }} />
+            )}
+            <Save onClick={handleSave} style={{ cursor: 'pointer' }} />
+          </div>
+        </InfoBar>
+        <InfoBar style={{ alignItems: 'center' }}>
+          <img style={{ maxWidth: '200px', marginRight: 20 }} src={image} alt={profileData.name} />
           <TextFieldGrid style={{ marginTop: 10 }}>
             <TextField
               InputProps={{
@@ -87,7 +149,9 @@ const Profile = ({ profileData }: ProfileProps) => {
               id="search"
               label="Nimi"
               variant="standard"
-              value={profileData.name}
+              error={inputError}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
             <TextField
               InputProps={{
@@ -99,7 +163,10 @@ const Profile = ({ profileData }: ProfileProps) => {
               }}
               variant="standard"
               label="Id"
-              value={profileData.cid}
+              type="number"
+              error={inputError}
+              value={cid}
+              onChange={(e) => setCid(e.target.value)}
             />
             <TextField
               InputProps={{
@@ -111,7 +178,8 @@ const Profile = ({ profileData }: ProfileProps) => {
               }}
               variant="standard"
               label="Kuva"
-              value={profileData.image}
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
             />
           </TextFieldGrid>
         </InfoBar>

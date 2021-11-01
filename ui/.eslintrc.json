@@ -26,6 +26,7 @@
       }
     },
     "rules": {
+      "consistent-return": "off",
       "react/require-default-props": "off",
       "eqeqeq": "off",
       "max-len": "off",
