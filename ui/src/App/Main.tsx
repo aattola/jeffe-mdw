@@ -15,7 +15,8 @@ import Kuva from '../images/lspd.png';
 
 const CustomContainer = styled.div<{see: boolean}>`
   height: 100vh;
-  opacity: ${(props) => (!props.see ? 1 : 0.35)};
+  opacity: ${(props) => (!props.see ? 1 : 0.45)};
+  transition: all .1s ease;
 `;
 
 const CustomGrid = styled.div`

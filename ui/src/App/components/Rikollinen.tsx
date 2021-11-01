@@ -192,7 +192,7 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
             <Divider sx={{ marginY: 2 }} />
 
             <FormGroup>
-              <FormControlLabel control={<Checkbox />} label="Etsintäkuuluta" />
+              <FormControlLabel control={<Checkbox disabled />} label="Etsintäkuuluta" />
             </FormGroup>
 
             <Divider sx={{ marginY: 2 }} />
@@ -258,7 +258,7 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
 
             <FormGroup sx={{ flexDirection: 'row', gap: 5 }}>
               <FormControlLabel control={<Checkbox disabled />} label="Syyllinen" />
-              <FormControlLabel control={<Checkbox />} label="Prosessoitu" />
+              <FormControlLabel control={<Checkbox disabled />} label="Prosessoitu" />
             </FormGroup>
           </TextContainer>
         );
