@@ -81,14 +81,14 @@ const Profile = ({ profileData, isCreate = false }: ProfileProps) => {
   const { mutateAsync, isLoading } = useMutation(['profiili', profileData.id], mutateTapahtuma);
   const [name, setName] = useState(profileData.name);
   const [cid, setCid] = useState(profileData.cid);
-  const [image, setImage] = useState(profileData.image ?? 'https://i.imgur.com/P3AdNRz.png');
+  const [image, setImage] = useState(profileData.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip');
   const [desc, setDesc] = useState(profileData.description);
   const [inputError, setError] = useState(false);
 
   useEffect(() => {
     setName(profileData.name);
     setCid(profileData.cid);
-    setImage(profileData.image ?? 'https://i.imgur.com/P3AdNRz.png');
+    setImage(profileData.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip');
     setDesc(profileData.description);
   }, [profileData]);
 
@@ -192,7 +192,7 @@ const Profile = ({ profileData, isCreate = false }: ProfileProps) => {
           autoHideDuration={200}
         >
           <Input
-            placeholder="Selityksiä"
+            placeholder="Lisätietoja"
             multiline
             value={(desc ?? undefined)}
             minRows={20}

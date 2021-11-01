@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { useQuery } from 'react-query';
 import SearchList from '../components/SearchList';
+import Rikosnimikkeet from './rikosnimikkeet';
+import { fetchNui } from '../../utils/fetchNui';
 
 const Grid = styled.div`
   display: grid;
@@ -10,27 +13,64 @@ const Grid = styled.div`
   padding: 10px;
 `;
 
-const DemoItems = [
-  {
-    name: 'Nimi tossa ja testi tässä',
-    id: 1,
-    timestamp: 1635000217565,
-  },
-  {
-    name: 'Hirveän pitkä teksti tämä on pitkähän tämä on että joku vammainen kirjoittaa näin pitkän tekstin koska he ovat vammaisia',
-    id: 2,
-    timestamp: 1634000217565,
-  },
-];
+const Container = styled.div`
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  position: relative; 
+  
+  & > * {
+    border-radius: 2px;
+  }
+`;
 
-const Etusivu = () => (
-  <div>
+const InfoBar = styled.div`
+  margin-bottom: 10px;
+  
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  
+`;
+
+const TextContainer = styled.div`
+  background: #2a3c52;
+  padding: 10px;
+`;
+
+async function fetchTapahtumat() {
+  return fetchNui('tapahtumat', {}, true);
+}
+
+const Etusivu = () => {
+  const {
+    data, isSuccess,
+  } = useQuery('tapahtumat', fetchTapahtumat);
+
+  return (
     <Grid>
-      <SearchList name="Testi lista" items={DemoItems} />
+      {isSuccess && (
+      <SearchList osoite="haeraportteja" name="Raportit" items={data.res.data} />
+      )}
 
-      <h1>HÖÖÖHÖÖÖ ETUSIVU TÄMÄ ON ETUSIVU </h1>
+      <Container>
+        <TextContainer>
+          <InfoBar>
+            <span>Etsintäkuulutukset:</span>
+          </InfoBar>
+        </TextContainer>
+      </Container>
+
+      <Container>
+        <TextContainer>
+          <InfoBar>
+            <span>Ilmoitukset:</span>
+          </InfoBar>
+        </TextContainer>
+      </Container>
     </Grid>
-  </div>
-);
+  );
+};
 
 export default Etusivu;

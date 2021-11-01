@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 
+import { Slide } from '@mui/material';
 import { useNuiEvent } from './hooks/useNuiEvent';
 import { useExitListener } from './hooks/useExitListener';
 import { debugData } from './utils/debugData';
@@ -15,20 +16,32 @@ debugData([
   },
 ]);
 
+const MyComponent = React.forwardRef((props, ref) => (
+  // @ts-ignore
+  <div ref={ref} {...props}>
+    <Main />
+  </div>
+));
+
 function App() {
   const [isOpen, setOpen] = useState(false);
 
   useNuiEvent('setVisible', (data: boolean) => {
-    console.log('setVisible', data);
     setOpen(data);
+  });
+
+  useNuiEvent('refresh', (data: boolean) => {
+    window.location.reload();
   });
   useExitListener(setOpen);
 
-  if (!isOpen) return <div />;
+  // if (!isOpen) return <div />;
 
   return (
-    <div className="App">
-      <Main />
+    <div className="App" style={{ overflow: 'hidden' }}>
+      <Slide timeout={100} direction="up" in={isOpen}>
+        <MyComponent />
+      </Slide>
     </div>
   );
 }

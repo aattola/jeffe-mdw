@@ -123,8 +123,6 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
       rikolliset: JSON.stringify(saveRikolliset),
     };
 
-    console.log({ saveData });
-
     await mutate(saveData);
     await queryClient.invalidateQueries('tapahtumat');
   };
@@ -167,8 +165,6 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
             currCharget[r.id] = [r];
           }
         });
-
-        console.log({ currCharget });
 
         return (
           <TextContainer key={criminal.id} style={{ padding: '15px 15px' }}>

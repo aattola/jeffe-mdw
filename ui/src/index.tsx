@@ -24,7 +24,6 @@ const darkTheme = createTheme({
 });
 
 fetchNui('ip', {}, false).then((data) => {
-  console.log(data.ip, 'ip');
   if (data.ip) {
     // eslint-disable-next-line no-global-assign
     (window as any).ip = data.ip;

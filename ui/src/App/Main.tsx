@@ -11,6 +11,7 @@ import Raportit from './pages/raportit';
 import Profiilit from './pages/profiilit';
 import Rikosnimikkeet from './pages/rikosnimikkeet';
 import useHover from './components/useHover';
+import Kuva from '../images/lspd.png';
 
 const CustomContainer = styled.div<{see: boolean}>`
   height: 100vh;
@@ -19,7 +20,7 @@ const CustomContainer = styled.div<{see: boolean}>`
 
 const CustomGrid = styled.div`
   display: grid;
-  grid-template-rows: 125px 1fr;
+  grid-template-rows: 150px 1fr;
   grid-template-columns: 1fr 10fr;
   height: 100%;
 `;
@@ -27,9 +28,20 @@ const CustomGrid = styled.div`
 const Header = styled.div`
   grid-column: 1 / 3;
   background: #2a3c52;
+  border-bottom: 2px solid rgb(66 165 245 / 66%);
+  
   //border-image-slice: 1;
   //border-image-source: linear-gradient(to left, #743ad5, #d53a9d);
-  //border-bottom: 2px solid #42a5f5;
+`;
+
+const Kortti = styled.div`
+  display: flex;
+  align-items: center;
+  background: #1c1d24;
+  border-radius: 9000px;
+  width: max-content;
+  margin: 10px;
+  padding-right: 50px;
 `;
 
 const Sidebar = styled.div`
@@ -68,7 +80,7 @@ const PageContents = styled.div`
   display: flex;
 `;
 
-const pages = ['Etusivu', 'Raportit', 'Profiilit', 'Poliisit', 'Rikosnimikkeet'];
+const pages = ['Etusivu', 'Raportit', 'Profiilit', 'Rikosnimikkeet'];
 
 const tabs = [
   {
@@ -100,12 +112,15 @@ const Main = () => {
       <div style={{ padding: '40px', height: 'calc(100vh - 80px)' }}>
         <CustomGrid>
           <Header ref={(hoverRef as any)}>
-            <h1 style={{ marginLeft: 20 }}>
-              Logo täs
-              <br />
-              {' '}
-              vissii
-            </h1>
+            <Kortti>
+              <img style={{ marginLeft: 10 }} height={115} src={Kuva} alt="ok" />
+              <h1 style={{ marginLeft: 20 }}>
+                Poliisi
+                <br />
+                {' '}
+                Sheriffi
+              </h1>
+            </Kortti>
           </Header>
 
           <Sidebar>

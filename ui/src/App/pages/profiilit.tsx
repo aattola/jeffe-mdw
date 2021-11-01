@@ -84,7 +84,7 @@ const Profiilit = () => {
       <div style={{ padding: '10px' }}>
         <Grid>
           {isSuccess && (
-            <SearchList name="Profiilit" showTimestamp={false} items={data.res.data} />
+            <SearchList osoite="haerikollisia" name="Profiilit" showTimestamp={false} items={data.res.data} />
           )}
           {id ? (
             <>
@@ -117,7 +117,7 @@ const Profiilit = () => {
               isCreate
               profileData={{
                 name: '',
-                image: 'https://i.imgur.com/P3AdNRz.png',
+                image: 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip',
                 id: '',
                 description: '',
               }}

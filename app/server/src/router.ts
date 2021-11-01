@@ -30,6 +30,18 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
     return cb({ ok: true, data: dbRes });
   }
 
+  if (eventName === 'haeraportteja') {
+    if (data && data.hakusana) {
+      const dbRes = await fetchAll('SELECT * FROM patja_tapahtumat WHERE name LIKE @hakusana LIMIT 20', {
+        '@hakusana': `%${data.hakusana}%`,
+      });
+
+      return cb({ ok: true, data: dbRes });
+    }
+
+    return cb({ ok: false, data: null });
+  }
+
   if (eventName === 'haerikollisia') {
     if (data && data.hakusana) {
       const dbRes = await fetchAll('SELECT * FROM patja_test_profiilit WHERE name LIKE @hakusana LIMIT 20', {

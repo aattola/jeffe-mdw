@@ -1,19 +1,25 @@
 /* eslint-disable import/no-duplicates */
-import React from 'react';
+import React, { ChangeEvent, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { InputAdornment, TextField } from '@mui/material';
+import { CircularProgress, InputAdornment, TextField } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Search from '@mui/icons-material/Search';
 import fi from 'date-fns/locale/fi';
 import { formatDistance } from 'date-fns';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { useMutation } from 'react-query';
+// @ts-ignore
+import useDimensions from 'react-use-dimensions';
+import { fetchNui } from '../../utils/fetchNui';
+import { BorderLinearProgress } from './Case';
 
 const Container = styled.div`
   background: #2a3c52;
   padding: 10px;
+  position: relative;
   
-  //display: grid;
-  //grid-template-rows: auto 1fr;
+  display: grid;
+  grid-template-rows: auto 1fr;
 `;
 
 const InfoBar = styled.div`
@@ -65,6 +71,10 @@ const Text = styled.span`
   text-overflow: ellipsis;
 `;
 
+async function mutateTapahtuma(data: {hakusana: string, osoite: string}) {
+  return fetchNui(data.osoite, data);
+}
+
 interface Items {
   name: string
   id: number
@@ -76,69 +86,118 @@ type SearchListProps = {
   items: Items[]
   // eslint-disable-next-line react/require-default-props
   showTimestamp?: boolean
+  osoite?: string
 }
 
-const SearchList = ({ name, items, showTimestamp = true }: SearchListProps) => {
+const SearchList = ({
+  name, items, showTimestamp = true, osoite,
+}: SearchListProps) => {
   const history = useHistory();
+  const [text, setText] = useState('');
+  const [lastData, setLastData] = useState([]);
+  const {
+    mutate, isLoading, data, status, reset,
+  } = useMutation(['raporttihaku', text], mutateTapahtuma);
+  const timeout = useRef();
+  const [ref, {
+    width, height,
+  }] = useDimensions();
+
+  const textChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+    clearTimeout(timeout.current);
+
+    if (!e.target.value) {
+      reset();
+      return;
+    }
+
+    (timeout as any).current = setTimeout(async () => {
+      if (!osoite) return console.log('ei osoitetta');
+      await mutate({ hakusana: e.target.value, osoite });
+      setLastData(data?.res?.data);
+    }, 250);
+  };
+
+  const itemmit = data?.res?.data && !isLoading ? data?.res?.data : items;
 
   return (
-    <Container>
+    <Container style={{ width }}>
+      {isLoading && (
+        <BorderLinearProgress style={{
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '8px',
+        }}
+        />
+      )}
       <InfoBar>
         <span>
           {name}
           :
         </span>
-        <TextField
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-          }}
-          id="search"
-          label="Haku"
-          variant="standard"
-        />
-      </InfoBar>
-      {/* <Scrollbars */}
-      {/*  autoHide */}
-      {/*  autoHideTimeout={1000} */}
-      {/*  autoHideDuration={200} */}
-      {/*  height="100%" */}
-      {/*  width="100%" */}
-      {/* > */}
-      <Grid>
-        {items.map((item) => (
-          <GridItem
-            onClick={() => {
-              history.push(`/${name}/${item.id}`);
+        {osoite && (
+          <TextField
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
             }}
-            key={item.id}
-          >
-            <Text>{item.name}</Text>
-            <ItemGrid>
-              <span>
-                ID:
-                {' '}
-                {item.id}
-              </span>
-              {showTimestamp && (
-              <span style={{ marginLeft: 'auto' }}>
-                {formatDistance(
-                  new Date(),
-                  new Date(item.timestamp),
-                  { locale: fi },
+            id="search"
+            label="Haku"
+            variant="standard"
+            onChange={textChange}
+            value={text}
+          />
+        )}
+      </InfoBar>
+      {/* <div style={{ width }}> */}
+      <Scrollbars
+        autoHide
+        autoHideTimeout={1000}
+        autoHideDuration={200}
+        height="100%"
+        width={width}
+      >
+        <Grid>
+          {data && data?.res?.data?.length === 0 && (
+            <GridItem style={{ justifyContent: 'center', cursor: 'default' }}>
+              <Text style={{ marginTop: 0 }}>Mitään ei löytynyt</Text>
+            </GridItem>
+          )}
+          {itemmit.map((item: any) => (
+            <GridItem
+              ref={ref}
+              onClick={() => {
+                history.push(`/${name}/${item.id}`);
+              }}
+              key={item.id}
+            >
+              <Text>{item.name}</Text>
+              <ItemGrid>
+                <span>
+                  ID:
+                  {' '}
+                  {item.id}
+                </span>
+                {showTimestamp && (
+                  <span style={{ marginLeft: 'auto' }}>
+                    {formatDistance(
+                      new Date(),
+                      new Date(item.timestamp),
+                      { locale: fi },
+                    )}
+                    {' '}
+                    sitten
+                  </span>
                 )}
-                {' '}
-                sitten
-              </span>
-              )}
-            </ItemGrid>
-          </GridItem>
-        ))}
-      </Grid>
-      {/* </Scrollbars> */}
+              </ItemGrid>
+            </GridItem>
+          ))}
+        </Grid>
+
+      </Scrollbars>
+      {/* </div> */}
     </Container>
   );
 };

@@ -55,7 +55,7 @@ const Raportit = () => {
       <Grid>
         {isSuccess && (
           <>
-            <SearchList name="Raportit" items={data.res.data} />
+            <SearchList osoite="haeraportteja" name="Raportit" items={data.res.data} />
 
             {id ? (
               <>

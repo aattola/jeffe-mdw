@@ -51,11 +51,20 @@ function toggleNuiFrame(toggle: boolean) {
   });
 }
 
-RegisterCommand('toggleui', (source: any, args: any) => {
-  console.log('Opening ui');
+RegisterCommand('mdw', (source: any, args: any) => {
+  // console.log('Opening ui');
   nuiOpen = !nuiOpen;
 
   toggleNuiFrame(nuiOpen);
+}, false);
+
+RegisterCommand('mdw-r', (source: any, args: any) => {
+  nuiOpen = false;
+  toggleNuiFrame(false);
+  SendNUIMessage({
+    action: 'refresh',
+    data: true,
+  });
 }, false);
 
 RegisterNuiCallbackType('hideFrame');

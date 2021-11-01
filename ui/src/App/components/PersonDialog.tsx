@@ -99,7 +99,7 @@ export default function PersonDialog({
               <Card style={{ marginTop: 10 }} key={profiili.id}>
                 <CardContent>
                   <div style={{ display: 'flex', gap: 15 }}>
-                    <img style={{ maxWidth: 125 }} alt="kuva" src={profiili.image ?? 'https://i.imgur.com/P3AdNRz.png'} />
+                    <img style={{ maxWidth: 125 }} alt="kuva" src={profiili.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip'} />
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <h1 style={{ margin: 0, fontSize: 20 }}>{profiili.name}</h1>
                       <p style={{ margin: 0, marginTop: 2 }}>
