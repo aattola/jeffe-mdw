@@ -141,6 +141,7 @@ const Rikollinen = ({ id, caseData, mutate: mutaa }: RikollinenProps) => {
     };
 
     const saveData = {
+      ...caseData,
       id: caseData.id,
       rikolliset: JSON.stringify(saveRikolliset),
     };

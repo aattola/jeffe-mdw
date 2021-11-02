@@ -7,7 +7,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import Search from '@mui/icons-material/Search';
 import fi from 'date-fns/locale/fi';
-import { formatDistance } from 'date-fns';
+import { formatDistance, isPast } from 'date-fns';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useMutation, useQuery } from 'react-query';
 // @ts-ignore
@@ -118,8 +118,6 @@ const Etsintakuulutetut = () => {
   const results = fuse.search(text);
   const kuulutukset = text ? results.map((nimike) => nimike.item) : (data?.res.data ?? []);
 
-  console.log({ data });
-
   return (
     <Container style={{ width }}>
       {/* {isLoading && ( */}
@@ -155,33 +153,38 @@ const Etsintakuulutetut = () => {
         width={width}
       >
         <Grid>
-          {kuulutukset.map((i: any) => (
-            <Card onClick={() => history.push(`/raportit/${i.tid}`)} key={i.id} style={{ cursor: 'pointer' }}>
-              <CardContent>
-                <div style={{ display: 'flex', gap: 15 }}>
-                  <img style={{ maxWidth: 125 }} alt="kuva" src={i.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip'} />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <h1 style={{ margin: 0, fontSize: 20 }}>{i.name}</h1>
-                    <p style={{ margin: 0, marginTop: 2 }}>
-                      ID:
-                      {' '}
-                      {i.cid}
-                    </p>
+          {kuulutukset.map((i: any) => {
+            const inPast = isPast(new Date(i.expires));
 
-                    <p style={{ margin: 0, marginTop: 'auto' }}>
-                      Vanhenee:
-                      {' '}
-                      {formatDistance(
-                        new Date(i.expires),
-                        new Date(),
-                        { locale: fi, addSuffix: true },
-                      )}
-                    </p>
+            return (
+              <Card onClick={() => history.push(`/raportit/${i.tid}`)} key={i.id} style={{ cursor: 'pointer' }}>
+                <CardContent>
+                  <div style={{ display: 'flex', gap: 15 }}>
+                    <img style={{ maxWidth: 125 }} alt="kuva" src={i.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip'} />
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <h1 style={{ margin: 0, fontSize: 20 }}>{i.name}</h1>
+                      <p style={{ margin: 0, marginTop: 2 }}>
+                        ID:
+                        {' '}
+                        {i.cid}
+                      </p>
+
+                      <p style={{ margin: 0, marginTop: 'auto' }}>
+                        Vanhenee:
+                        {inPast ? 'PAST' : 'EI PAST'}
+                        {' '}
+                        {formatDistance(
+                          new Date(i.expires),
+                          new Date(),
+                          { locale: fi, addSuffix: true },
+                        )}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </Grid>
 
       </Scrollbars>
