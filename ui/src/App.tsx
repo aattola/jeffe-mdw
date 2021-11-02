@@ -30,7 +30,7 @@ function App() {
     setOpen(data);
   });
 
-  useNuiEvent('refresh', (data: boolean) => {
+  useNuiEvent('refresh', () => {
     window.location.reload();
   });
   useExitListener(setOpen);

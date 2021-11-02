@@ -1,15 +1,15 @@
 /* eslint-disable import/no-duplicates */
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import styled from '@emotion/styled';
 import {
-  Card, CardContent, CircularProgress, InputAdornment, TextField,
+  Card, CardContent, InputAdornment, TextField,
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Search from '@mui/icons-material/Search';
 import fi from 'date-fns/locale/fi';
 import { formatDistance, isPast } from 'date-fns';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-import { useMutation, useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 // @ts-ignore
 import useDimensions from 'react-use-dimensions';
 import Fuse from 'fuse.js';
@@ -43,59 +43,15 @@ const Grid = styled.div`
   grid-gap: 10px;
 `;
 
-const GridItem = styled.div`
-  background: #18191f;
-  padding: 10px 15px;
-  height: 50px;
-  
-  display: flex;
-  flex-direction: column;
-  
-  cursor: pointer;
-  border-radius: 4px;
-  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-  
-  & :last-child {
-    margin-top: auto;
-  }
-`;
-
-const ItemGrid = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const Text = styled.span`
-  display: inline-block;
-  width: 500px;
-  white-space: nowrap;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-`;
-
-async function mutateTapahtuma(data: {hakusana: string, osoite: string}) {
-  return fetchNui(data.osoite, data);
-}
-
-interface Items {
-  name: string
-  id: number
-  timestamp: number
-}
-
 function fetchKuulutukset() {
   return fetchNui('etsintäkuulutukset');
-}
-
-type EtsintakuulutetutProps = {
-
 }
 
 const Etsintakuulutetut = () => {
   const history = useHistory();
   const [text, setText] = useState('');
   const { data } = useQuery('etsintäkuulutukset', fetchKuulutukset);
-  const [ref, {
+  const [, {
     width,
   }] = useDimensions();
 
@@ -153,11 +109,18 @@ const Etsintakuulutetut = () => {
         width={width}
       >
         <Grid>
+          {!kuulutukset[0] && (
+            <Card style={{ background: '#313b4e' }}>
+              <CardContent>
+                <p>Ei aktiivisia etsintäkuulutuksia</p>
+              </CardContent>
+            </Card>
+          )}
           {kuulutukset.map((i: any) => {
             const inPast = isPast(new Date(i.expires));
 
             return (
-              <Card onClick={() => history.push(`/raportit/${i.tid}`)} key={i.id} style={{ cursor: 'pointer' }}>
+              <Card onClick={() => history.push(`/raportit/${i.tid}`)} key={i.id} style={{ background: '#232a36', cursor: 'pointer', opacity: inPast ? 0.35 : 1 }}>
                 <CardContent>
                   <div style={{ display: 'flex', gap: 15 }}>
                     <img style={{ maxWidth: 125 }} alt="kuva" src={i.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip'} />
@@ -170,8 +133,7 @@ const Etsintakuulutetut = () => {
                       </p>
 
                       <p style={{ margin: 0, marginTop: 'auto' }}>
-                        Vanhenee:
-                        {inPast ? 'PAST' : 'EI PAST'}
+                        Vanhenee
                         {' '}
                         {formatDistance(
                           new Date(i.expires),

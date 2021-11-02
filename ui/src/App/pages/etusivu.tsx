@@ -2,7 +2,6 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { useQuery } from 'react-query';
 import SearchList from '../components/SearchList';
-import Rikosnimikkeet from './rikosnimikkeet';
 import { fetchNui } from '../../utils/fetchNui';
 import Etsintakuulutetut from '../components/Etsintakuulutetut';
 

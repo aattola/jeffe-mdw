@@ -34,6 +34,7 @@ interface Rikosfetch {
 
 interface RikosnimikkeetProps {
   addMode: boolean
+  // eslint-disable-next-line no-unused-vars
   addNimike?: (data: any) => void
 }
 

@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import {
-  Box, Button, Divider, Grid, List, ListItem, ListItemIcon, ListItemText, Paper,
-} from '@mui/material';
+import React from 'react';
 import styled from '@emotion/styled';
 import {
   Route, Switch, useHistory, useLocation,
@@ -82,22 +79,6 @@ const PageContents = styled.div`
 `;
 
 const pages = ['Etusivu', 'Raportit', 'Profiilit', 'Rikosnimikkeet'];
-
-const tabs = [
-  {
-    route: '/raportit/3',
-    page: 'Raportit',
-    id: 1,
-  }, {
-    route: '/profiilit',
-    page: 'Profiilit',
-    id: 2,
-  }, {
-    route: '/profiilit/3',
-    page: 'Profiilit',
-    id: 3,
-  },
-];
 
 const Main = () => {
   const history = useHistory();

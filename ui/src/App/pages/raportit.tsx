@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
-import { CircularProgress, LinearProgress, linearProgressClasses } from '@mui/material';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import SearchList from '../components/SearchList';
 import Case from '../components/Case';
@@ -37,11 +36,11 @@ export interface ICase {
 
 const Raportit = () => {
   const {
-    data, isSuccess, isError, refetch,
+    data, isSuccess, isError,
   } = useQuery('tapahtumat', fetchTapahtumat);
   const { id } = useParams<{id?: string}>();
   const {
-    mutate, isSuccess: success, data: tapahtuma, isLoading,
+    mutate, isSuccess: success, data: tapahtuma,
   } = useMutation(['tapahtuma', id], getTapahtumat);
 
   useEffect(() => {

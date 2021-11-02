@@ -1,23 +1,22 @@
 import * as React from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import {
-  Box,
-  Card, CardActions, CardContent, CardMedia, Chip, CircularProgress, List, TextField,
+  Card, CardContent, List, TextField,
 } from '@mui/material';
-import { ChangeEvent, useRef, useState } from 'react';
-import { useMutation, useQuery } from 'react-query';
-import { ICase } from '../pages/raportit';
+import { useMutation } from 'react-query';
 import { fetchNui } from '../../utils/fetchNui';
 
 type PersonDialogProps = {
   open: boolean
   personnel: any[]
+  // eslint-disable-next-line no-unused-vars
   setOpen: (open: boolean) => void
+  // eslint-disable-next-line no-unused-vars
   setPersonnel: (newState: any) => void
 }
 
@@ -38,7 +37,7 @@ export default function PersonDialog({
 }: PersonDialogProps) {
   const [text, setText] = useState('');
   const {
-    mutate, isLoading, data, status, reset,
+    mutate, data, reset,
   } = useMutation(['profiilihaku', text], mutateTapahtuma);
   const timeout = useRef();
 

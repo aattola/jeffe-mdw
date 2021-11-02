@@ -1,28 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
-import {
-  Checkbox,
-  Chip,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  InputAdornment,
-  InputLabel,
-  MenuItem, Select,
-  SelectChangeEvent,
-  TextField,
-} from '@mui/material';
-import { useHistory } from 'react-router-dom';
-import Add from '@mui/icons-material/Add';
-import Save from '@mui/icons-material/Save';
-import DeleteOutline from '@mui/icons-material/Remove';
-import { useMutation, useQueryClient } from 'react-query';
-import { ICase } from '../pages/raportit';
-import PersonDialog from './PersonDialog';
-import SyyteDialog from './SyyteDialog';
-import { fetchNui } from '../../utils/fetchNui';
-import { BorderLinearProgress } from './Case';
+import { Chip } from '@mui/material';
 
 const Container = styled.div`
   display: flex;
@@ -68,7 +46,7 @@ const ProfileInfo = ({ profileData, id }: ProfileInfoProps) => {
       return null;
     });
 
-    const b = rikoksetTuosta.map((a: any) => {
+    return rikoksetTuosta.map((a: any) => {
       if (a) {
         return {
           raporttiId: raportti.id,
@@ -78,8 +56,6 @@ const ProfileInfo = ({ profileData, id }: ProfileInfoProps) => {
 
       return null;
     });
-
-    return b;
   });
 
   const rikokset = rikoksetVammanen.reduce((previousValue, currentValue) => {

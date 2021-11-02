@@ -3,15 +3,16 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Chip, TextField } from '@mui/material';
 import { useState } from 'react';
 
 type TagDialogProps = {
   open: boolean
-  setOpen: (open: boolean) => void
   tagit: any[]
+  // eslint-disable-next-line no-unused-vars
+  setOpen: (open: boolean) => void
+  // eslint-disable-next-line no-unused-vars
   setTagit: (newState: any) => void
 }
 

@@ -7,18 +7,16 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  InputAdornment,
   InputLabel,
   MenuItem, Select,
   SelectChangeEvent,
-  TextField,
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Add from '@mui/icons-material/Add';
 import Save from '@mui/icons-material/Save';
 import DeleteOutline from '@mui/icons-material/Remove';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { ICase } from '../pages/raportit';
 import PersonDialog from './PersonDialog';
 import SyyteDialog from './SyyteDialog';
@@ -46,12 +44,6 @@ const InfoBar = styled.div`
   
 `;
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-rows: repeat(auto-fill, 1fr);
-  grid-gap: 20px;
-`;
-
 const ChipGrid = styled.div`
   display: flex;
   gap: 6px;
@@ -67,15 +59,14 @@ async function mutateTapahtuma(data: {id: number, rikolliset: string}) {
   return fetchNui('tallennaTapahtuma', data);
 }
 
-interface Items {
-  name: string
-  id: number
-  timestamp: number
+function getEtsintakuulutus(i: any) {
+  return fetchNui('etsintäkuulutukset', { id: i.queryKey[1] });
 }
 
 type RikollinenProps = {
   id: string
   caseData: ICase
+  // eslint-disable-next-line no-unused-vars
   mutate?: (options: any) => any
 }
 
@@ -87,7 +78,7 @@ interface Syyte {
   sakko: number
 }
 
-const Rikollinen = ({ id, caseData, mutate: mutaa }: RikollinenProps) => {
+const Rikollinen = ({ caseData, mutate: mutaa }: RikollinenProps) => {
   const history = useHistory();
   const rikolliset = JSON.parse(caseData.rikolliset);
   const queryClient = useQueryClient();
@@ -98,6 +89,11 @@ const Rikollinen = ({ id, caseData, mutate: mutaa }: RikollinenProps) => {
   const [charges, setCharges] = useState(rikolliset.charges ?? []);
   const [vahennykset, setVahennykset] = React.useState(rikolliset.vahennykset ?? 1);
   const { mutate, isLoading } = useMutation(['case', caseData.id], mutateTapahtuma);
+
+  const { data } = useQuery(['etsintäkuulutus', caseData.id], getEtsintakuulutus);
+  const etsintakuulutukset = data?.res?.data;
+
+  console.log({ etsintakuulutukset });
 
   const handleChange = (event: SelectChangeEvent) => {
     setVahennykset(Number(event.target.value));

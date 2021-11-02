@@ -23,8 +23,10 @@ const ChargeGrid = styled.div`
 
 type SyyteDialogProps = {
   open: boolean
-  setOpen: (open: boolean) => void
   charges: any[]
+  // eslint-disable-next-line no-unused-vars
+  setOpen: (open: boolean) => void
+  // eslint-disable-next-line no-unused-vars
   setCharges: (newState: any) => void
   rikollinen: { id: number, label: string }
 }

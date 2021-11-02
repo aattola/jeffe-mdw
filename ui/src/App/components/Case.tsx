@@ -64,12 +64,6 @@ export const BorderLinearProgress = styled(LinearProgress)(({ theme }: any) => (
   },
 }));
 
-interface Items {
-  name: string
-  id: number
-  timestamp: number
-}
-
 type CaseProps = {
   name: string
   caseData: ICase
@@ -79,10 +73,6 @@ type CaseProps = {
 
 async function mutateTapahtuma(data: ICase) {
   return fetchNui('tallennaTapahtuma', data);
-}
-
-async function mutateNew() {
-  return fetchNui('uusiTapahtuma');
 }
 
 async function deleteCase(id: number) {
@@ -95,7 +85,6 @@ const Case = ({
   const history = useHistory();
   const queryClient = useQueryClient();
   const { mutateAsync, isLoading } = useMutation(['case', caseData.id], mutateTapahtuma);
-  const { mutateAsync: newAsync, isLoading: loading } = useMutation(['newCase', Date.now()], mutateNew);
   const { mutateAsync: deleteAsync } = useMutation(['deleteCase', Date.now()], deleteCase);
   const { tags, police } = JSON.parse(caseData.data);
   const [name, setName] = useState(caseData.name);
@@ -109,14 +98,8 @@ const Case = ({
     history.push('/raportit');
   }
 
-  async function handleCreateNew() {
-    // await newAsync();
-    // await queryClient.invalidateQueries('tapahtumat');
+  function handleCreateNew() {
     history.push('/raportit');
-
-    // return setTimeout(() => {
-    //   history.push(`/raportit/${latestId}`);
-    // }, 500);
   }
 
   async function handleSave() {

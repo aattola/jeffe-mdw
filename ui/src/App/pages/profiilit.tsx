@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from '@emotion/styled';
 import { useParams } from 'react-router-dom';
-import { useMutation, useQuery } from 'react-query';
-import { CircularProgress, LinearProgress, linearProgressClasses } from '@mui/material';
+import { useQuery } from 'react-query';
+import { LinearProgress, linearProgressClasses } from '@mui/material';
 import SearchList from '../components/SearchList';
-import Case from '../components/Case';
-import Rikollinen from '../components/Rikollinen';
 import { fetchNui } from '../../utils/fetchNui';
 import ErrorBoundary from '../../ErrorBoundary';
 import Profile from '../components/Profile';
@@ -27,28 +25,6 @@ async function getProfiili(data: any) {
   return fetchNui('profiilit', { id: data });
 }
 
-export interface ICase {
-  id: number
-  name: string
-  description: string
-  timestamp: Date
-  rikolliset: any
-  data: any
-}
-
-const DemoItems = [
-  {
-    name: 'Nimi tossa ja testi tässä',
-    id: 1,
-    timestamp: 1635000217565,
-  },
-  {
-    name: 'Hirveän pitkä teksti tämä on pitkähän tämä on että joku vammainen kirjoittaa näin pitkän tekstin koska he ovat vammaisia',
-    id: 2,
-    timestamp: 1634000217565,
-  },
-];
-
 const BorderLinearProgress = styled(LinearProgress)(({ theme }: any) => ({
   height: 10,
   borderRadius: 3,
@@ -65,7 +41,7 @@ const Profiilit = () => {
   const { data, isSuccess, isError } = useQuery('profiilit', fetchProfiilit);
   const { id } = useParams<{id?: string}>();
   const {
-    data: profiili, isSuccess: success, isLoading, isError: err, refetch,
+    data: profiili, isLoading, isError: err, refetch,
   } = useQuery(['profiili', id], () => getProfiili(id), {
     enabled: !!id,
   });

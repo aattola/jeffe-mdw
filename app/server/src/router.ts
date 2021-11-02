@@ -56,7 +56,15 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
 
   if (eventName === 'etsintäkuulutukset') {
     // const dbRes = await fetchAll('SELECT * FROM patja_etsintakuulutukset ORDER BY id DESC LIMIT 100');
-    const dbRes = await fetchAll('SELECT * FROM patja_etsintakuulutukset JOIN patja_test_profiilit ON patja_etsintakuulutukset.pid =  patja_test_profiilit.id');
+    if (data && data.id) {
+      const dbRes = await fetchAll('SELECT * FROM patja_etsintakuulutukset JOIN patja_test_profiilit ON patja_etsintakuulutukset.pid =  patja_test_profiilit.id WHERE expires > CURRENT_TIME AND tid = @tid', {
+        '@tid': data.id,
+      });
+
+      return cb({ ok: true, data: dbRes });
+    }
+
+    const dbRes = await fetchAll('SELECT * FROM patja_etsintakuulutukset JOIN patja_test_profiilit ON patja_etsintakuulutukset.pid =  patja_test_profiilit.id WHERE expires > CURRENT_TIME');
     return cb({ ok: true, data: dbRes });
   }
 

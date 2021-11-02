@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import {
-  Checkbox,
-  Chip, Divider, FormControlLabel, FormGroup, Input, InputAdornment, TextField,
+  Divider, Input, InputAdornment, TextField,
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import PersonIcon from '@mui/icons-material/Person';
@@ -12,7 +11,6 @@ import { Scrollbars } from 'react-custom-scrollbars-2';
 import Add from '@mui/icons-material/Add';
 import Save from '@mui/icons-material/Save';
 import { useMutation, useQueryClient } from 'react-query';
-import { ICase } from '../pages/raportit';
 import { fetchNui } from '../../utils/fetchNui';
 
 const Container = styled.div`
@@ -37,12 +35,6 @@ const InfoBar = styled.div`
   justify-content: center;
 `;
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-rows: repeat(auto-fill, 1fr);
-  grid-gap: 20px;
-`;
-
 const TextFieldGrid = styled.div`
   display: flex;
   gap: 20px;
@@ -64,12 +56,6 @@ async function mutateTapahtuma(data: any) {
   return fetchNui('tallennaProfiili', data);
 }
 
-interface Items {
-  name: string
-  id: number
-  timestamp: number
-}
-
 type ProfileProps = {
   profileData: any
   isCreate?: boolean
@@ -78,7 +64,7 @@ type ProfileProps = {
 const Profile = ({ profileData, isCreate = false }: ProfileProps) => {
   const queryClient = useQueryClient();
   const history = useHistory();
-  const { mutateAsync, isLoading } = useMutation(['profiili', profileData.id], mutateTapahtuma);
+  const { mutateAsync } = useMutation(['profiili', profileData.id], mutateTapahtuma);
   const [name, setName] = useState(profileData.name);
   const [cid, setCid] = useState(profileData.cid);
   const [image, setImage] = useState(profileData.image ?? 'https://images.theconversation.com/files/229852/original/file-20180730-106514-1tfe2rs.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip');

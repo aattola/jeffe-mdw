@@ -1,7 +1,7 @@
 /* eslint-disable import/no-duplicates */
 import React, { ChangeEvent, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import { CircularProgress, InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, TextField } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import Search from '@mui/icons-material/Search';
 import fi from 'date-fns/locale/fi';
@@ -94,13 +94,13 @@ const SearchList = ({
 }: SearchListProps) => {
   const history = useHistory();
   const [text, setText] = useState('');
-  const [lastData, setLastData] = useState([]);
+  const [, setLastData] = useState([]);
   const {
-    mutate, isLoading, data, status, reset,
+    mutate, isLoading, data, reset,
   } = useMutation(['raporttihaku', text], mutateTapahtuma);
   const timeout = useRef();
   const [ref, {
-    width, height,
+    width,
   }] = useDimensions();
 
   const textChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
