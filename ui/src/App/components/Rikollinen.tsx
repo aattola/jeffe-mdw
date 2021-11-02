@@ -17,6 +17,7 @@ import { useHistory } from 'react-router-dom';
 import Add from '@mui/icons-material/Add';
 import Save from '@mui/icons-material/Save';
 import DeleteOutline from '@mui/icons-material/Remove';
+import ReplayIcon from '@mui/icons-material/Replay';
 import { useMutation, useQueryClient } from 'react-query';
 import { ICase } from '../pages/raportit';
 import PersonDialog from './PersonDialog';
@@ -62,7 +63,7 @@ const TextContainer = styled.div`
   padding: 10px;
 `;
 
-async function mutateTapahtuma(data: {id: number, rikolliset: string, data: any}) {
+async function mutateTapahtuma(data: {id: number, rikolliset: string}) {
   return fetchNui('tallennaTapahtuma', data);
 }
 
@@ -75,6 +76,7 @@ interface Items {
 type RikollinenProps = {
   id: string
   caseData: ICase
+  mutate?: (options: any) => any
 }
 
 interface Syyte {
@@ -85,7 +87,8 @@ interface Syyte {
   sakko: number
 }
 
-const Rikollinen = ({ id, caseData }: RikollinenProps) => {
+const Rikollinen = ({ id, caseData, mutate: mutaa }: RikollinenProps) => {
+  const history = useHistory();
   const rikolliset = JSON.parse(caseData.rikolliset);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -110,6 +113,26 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
     setChargesOpen(true);
   };
 
+  const handleRefetch = async () => {
+    if (mutaa) {
+      await mutaa({ id: caseData.id, refresh: true });
+      const saveRikolliset = {
+        criminals,
+        charges,
+        vahennykset,
+      };
+
+      const saveData = {
+        ...caseData,
+        id: caseData.id,
+        rikolliset: JSON.stringify(saveRikolliset),
+      };
+
+      await mutate(saveData);
+      await queryClient.invalidateQueries('tapahtumat');
+    }
+  };
+
   const handleSave = async () => {
     const saveRikolliset = {
       criminals,
@@ -118,7 +141,6 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
     };
 
     const saveData = {
-      ...caseData,
       id: caseData.id,
       rikolliset: JSON.stringify(saveRikolliset),
     };
@@ -140,6 +162,7 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
           Rikolliset
 
           <div style={{ marginLeft: 'auto' }}>
+            <ReplayIcon style={{ cursor: 'pointer' }} onClick={handleRefetch} />
             <Add onClick={() => setOpen(true)} style={{ cursor: 'pointer' }} />
             <Save onClick={handleSave} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
           </div>
@@ -169,7 +192,7 @@ const Rikollinen = ({ id, caseData }: RikollinenProps) => {
         return (
           <TextContainer key={criminal.id} style={{ padding: '15px 15px' }}>
             <InfoBar>
-              <span>{criminal.label}</span>
+              <span role="none" style={{ cursor: 'pointer' }} onClick={() => history.push(`/profiilit/${criminal.id}`)}>{criminal.label}</span>
               <div style={{ marginLeft: 'auto' }}>
                 <DeleteOutline onClick={() => handleRemove(criminal.id)} style={{ marginLeft: 'auto', cursor: 'pointer' }} />
               </div>

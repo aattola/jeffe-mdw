@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import SearchList from '../components/SearchList';
 import Rikosnimikkeet from './rikosnimikkeet';
 import { fetchNui } from '../../utils/fetchNui';
+import Etsintakuulutetut from '../components/Etsintakuulutetut';
 
 const Grid = styled.div`
   display: grid;
@@ -54,13 +55,15 @@ const Etusivu = () => {
       <SearchList osoite="haeraportteja" name="Raportit" items={data.res.data} />
       )}
 
-      <Container>
-        <TextContainer>
-          <InfoBar>
-            <span>Etsintäkuulutukset:</span>
-          </InfoBar>
-        </TextContainer>
-      </Container>
+      <Etsintakuulutetut />
+
+      {/* <Container> */}
+      {/*  <TextContainer> */}
+      {/*    <InfoBar> */}
+      {/*      <span>Etsintäkuulutukset:</span> */}
+      {/*    </InfoBar> */}
+      {/*  </TextContainer> */}
+      {/* </Container> */}
 
       <Container>
         <TextContainer>

@@ -22,7 +22,7 @@ async function fetchTapahtumat() {
   return fetchNui('tapahtumat', {}, true);
 }
 
-async function getTapahtumat(data: {id: string}) {
+async function getTapahtumat(data: {id: string, refresh?: boolean}) {
   return fetchNui('tapahtumat', data);
 }
 
@@ -66,7 +66,7 @@ const Raportit = () => {
                         <Case isCreate={false} loading={false} name={data.res.data.name} caseData={tapahtuma.res.data[0]} />
 
                         <Scrollbars autoHide>
-                          <Rikollinen caseData={tapahtuma.res.data[0]} id={id} />
+                          <Rikollinen mutate={mutate} caseData={tapahtuma.res.data[0]} id={id} />
                         </Scrollbars>
                       </>
                     ) : (

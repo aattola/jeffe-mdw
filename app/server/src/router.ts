@@ -54,11 +54,47 @@ app.post('/nui/jeffe-patja/:id', async (req: Request, res: Response) => {
     return cb({ ok: false, data: null });
   }
 
+  if (eventName === 'etsintäkuulutukset') {
+    // const dbRes = await fetchAll('SELECT * FROM patja_etsintakuulutukset ORDER BY id DESC LIMIT 100');
+    const dbRes = await fetchAll('SELECT * FROM patja_etsintakuulutukset JOIN patja_test_profiilit ON patja_etsintakuulutukset.pid =  patja_test_profiilit.id');
+    return cb({ ok: true, data: dbRes });
+  }
+
   if (eventName === 'tapahtumat') {
     if (data && data.id) {
       const dbRes = await fetchAll('SELECT * FROM patja_tapahtumat WHERE id = @id', {
         '@id': data.id,
       });
+
+      if (data.refresh) {
+        if (dbRes[0].rikolliset) {
+          const rikolliset = JSON.parse(dbRes[0].rikolliset);
+          if (rikolliset.criminals && rikolliset.criminals[0]) {
+            const uusiRikolliset: {label: string, id: number}[] = [];
+            rikolliset.criminals.forEach(async (rikollinen: {label: string, id: number}, index: number) => {
+              const vastaus = await fetchAll('SELECT * FROM patja_test_profiilit WHERE id = @id', {
+                '@id': rikollinen.id,
+              });
+
+              uusiRikolliset.push({
+                label: vastaus[0].name,
+                id: vastaus[0].id,
+              });
+
+              if (index === (rikolliset.criminals.length - 1)) {
+                dbRes[0].rikolliset = JSON.stringify({
+                  ...rikolliset,
+                  criminals: uusiRikolliset,
+                });
+
+                return cb({ ok: true, data: dbRes });
+              }
+            });
+            return;
+          }
+          return cb({ ok: true, data: dbRes });
+        }
+      }
 
       return cb({ ok: true, data: dbRes });
     }
